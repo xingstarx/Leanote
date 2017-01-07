@@ -1,0 +1,109 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_logo"
+    tools:context="com.leanote.android.LoginActivity">
+
+    <LinearLayout
+        android:id="@+id/login_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_marginBottom="20dp"
+        android:background="@android:color/white"
+        android:orientation="vertical">
+
+        <EditText
+            android:id="@+id/email"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@null"
+            android:drawableLeft="@drawable/signin_users"
+            android:drawablePadding="10dp"
+            android:hint="@string/prompt_email"
+            android:inputType="textEmailAddress"
+            android:padding="6dp" />
+
+        <EditText
+            android:id="@+id/password"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@null"
+            android:drawableLeft="@drawable/pwd_lock"
+            android:drawablePadding="10dp"
+            android:hint="@string/prompt_password"
+            android:inputType="textPassword"
+            android:padding="6dp" />
+
+        <EditText
+            android:id="@+id/custom_website"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@null"
+            android:visibility="gone"
+            android:drawableLeft="@drawable/self_hosted_site"
+            android:drawablePadding="10dp"
+            android:hint="@string/edittext_hint_custom_website_url"
+            android:padding="6dp" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/sign_in"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/login_container"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:background="@color/bg_sign_in_button"
+        android:gravity="center"
+        android:minHeight="48dp"
+        android:text="@string/title_activity_login"
+        android:textColor="@android:color/white" />
+
+    <TextView
+        android:id="@+id/forget_pwd"
+        android:layout_width="120dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/sign_in"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:gravity="center"
+        android:padding="4dp"
+        android:text="@string/action_forget_password"
+        android:textColor="@android:color/white" />
+
+    <ImageView
+        android:layout_width="140dp"
+        android:layout_height="140dp"
+        android:layout_above="@id/login_container"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="60dp"
+        android:src="@drawable/leanote_icon_circle" />
+
+    <TextView
+        android:id="@+id/sign_up"
+        android:layout_width="120dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="20dp"
+        android:gravity="center"
+        android:padding="4dp"
+        android:text="@string/action_sign_up"
+        android:textColor="@android:color/white" />
+
+    <TextView
+        android:id="@+id/add_custom_website"
+        android:layout_width="120dp"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/sign_up"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="10dp"
+        android:gravity="center"
+        android:padding="4dp"
+        android:text="@string/action_custom_website"
+        android:textColor="@android:color/white" />
+
+</RelativeLayout>
