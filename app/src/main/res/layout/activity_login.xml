@@ -64,7 +64,7 @@
 
     <TextView
         android:id="@+id/forget_pwd"
-        android:layout_width="120dp"
+        android:layout_width="160dp"
         android:layout_height="wrap_content"
         android:layout_below="@id/sign_in"
         android:layout_centerHorizontal="true"

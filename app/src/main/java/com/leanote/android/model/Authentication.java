@@ -2,33 +2,27 @@ package com.leanote.android.model;
 
 
 import com.google.gson.annotations.SerializedName;
-import com.raizlabs.android.dbflow.annotation.Column;
 
-public class Authentication extends BaseResponse {
+public class Authentication{
 
+    @SerializedName("Ok")
+    public boolean ok;
     @SerializedName("UserId")
-    String userId = "";
+    public String userId = "";
     @SerializedName("Username")
-    String userName = "";
-    @Column(name = "email")
+    public String userName = "";
     @SerializedName("Email")
-    String email = "";
+    public String email = "";
     @SerializedName("Token")
-    String accessToken = "";
+    public String accessToken = "";
 
-    public String getUserId() {
-        return userId;
-    }
-
-    public String getUserName() {
-        return userName;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public String getAccessToken() {
-        return accessToken;
+    @Override
+    public String toString() {
+        return "Authentication{" +
+                "userId='" + userId + '\'' +
+                ", userName='" + userName + '\'' +
+                ", email='" + email + '\'' +
+                ", accessToken='" + accessToken + '\'' +
+                '}';
     }
 }
