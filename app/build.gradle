@@ -30,7 +30,8 @@ dependencies {
 
 
     compile group: 'com.squareup.okhttp3', name: 'logging-interceptor', version: '3.4.1'
-    compile group: 'com.squareup.retrofit2', name: 'adapter-rxjava', version: '2.1.0'
+    compile 'com.squareup.retrofit2:converter-gson:2.1.0'
+    compile 'com.squareup.retrofit2:adapter-rxjava:2.1.0'
 
     apt "com.github.Raizlabs.DBFlow:dbflow-processor:${dbflow_version}"
     compile "com.github.Raizlabs.DBFlow:dbflow-core:${dbflow_version}"

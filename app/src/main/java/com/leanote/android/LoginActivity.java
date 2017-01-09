@@ -4,19 +4,26 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
 import com.leanote.android.api.ApiProvider;
-import com.leanote.android.api.AuthApi;
+import com.leanote.android.model.Authentication;
+import com.leanote.android.model.BaseModel;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
+import rx.schedulers.Schedulers;
 
 public class LoginActivity extends AppCompatActivity {
-
+    private static final String LEANOTE_HOST = "https://leanote.com";
     @BindView(R.id.email)
     EditText mEmailView;
     @BindView(R.id.password)
@@ -31,14 +38,14 @@ public class LoginActivity extends AppCompatActivity {
     TextView mSignUpBtn;
     @BindView(R.id.add_custom_website)
     TextView mAddCustomWebsiteBtn;
-    private AuthApi mAuthApi;
+    private ApiProvider mApiProvider;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
-        mAuthApi = ApiProvider.getInstance().getAuthApi();
+        mApiProvider = ApiProvider.getInstance();
     }
 
     public static void startLogin(Context context) {
@@ -50,7 +57,21 @@ public class LoginActivity extends AppCompatActivity {
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.sign_in:
-//                mAuthApi.
+                mApiProvider.init(getHost());
+                Observable<BaseModel<Authentication>> observable = mApiProvider.getAuthApi().login(mEmailView.getText().toString(), mPasswordView.getText().toString());
+                observable.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Action1<BaseModel<Authentication>>() {
+                    @Override
+                    public void call(BaseModel<Authentication> authenticationBaseModel) {
+                        Log.e("TEST", "authentication == " + authenticationBaseModel.data);
+                    }
+
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        throwable.printStackTrace();
+                        Log.e("TEST", "throwable");
+                    }
+                });
                 break;
             case R.id.forget_pwd:
                 break;
@@ -59,6 +80,10 @@ public class LoginActivity extends AppCompatActivity {
             case R.id.add_custom_website:
                 break;
         }
+    }
+
+    private String getHost() {
+        return !TextUtils.isEmpty(mCustomWebsiteView.getText().toString()) ? mCustomWebsiteView.getText().toString().trim() : LEANOTE_HOST;
     }
 }
 
