@@ -8,13 +8,15 @@ public class JsonWrapperHelper {
 
     public static String getWrapperJson(String string) {
         JsonParser parser = new JsonParser();
-        JsonObject object = parser.parse(string).getAsJsonObject();
-        if (object.has("Ok") && object.has("Msg")) {
-            return string;
-        } else {
-            StringBuilder builder = new StringBuilder();
-            builder.append("{\"Ok\":false,\"Msg\":null,\"data\":").append(string).append("}");
-            return builder.toString();
+        JsonElement element = parser.parse(string);
+        if (element.isJsonObject()) {
+            JsonObject object = element.getAsJsonObject();
+            if (object.has("Ok") && object.has("Msg")) {
+                return string;
+            }
         }
+        StringBuilder builder = new StringBuilder();
+        builder.append("{\"Ok\":false,\"Msg\":null,\"data\":").append(string).append("}");
+        return builder.toString();
     }
 }
