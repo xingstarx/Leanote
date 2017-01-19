@@ -1,5 +1,7 @@
 package com.leanote.android;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -11,6 +13,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
 
+import com.leanote.android.database.AppDataBase;
+import com.leanote.android.service.SyncService;
 import com.leanote.android.weidget.TabBarView;
 
 import butterknife.BindView;
@@ -30,14 +34,15 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        if(AppDataBase.getAccountWithToken() == null) {
-//            LoginActivity.startLogin(this);
-//            finish();
-//            return;
-//        }
+        if(AppDataBase.getAccountWithToken() == null) {
+            LoginActivity.startLogin(this);
+            finish();
+            return;
+        }
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         init();
+        SyncService.startSyncAll(this);
     }
 
     private void init() {
@@ -57,6 +62,11 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    public static void show(Context context) {
+        Intent intent = new Intent(context, MainActivity.class);
+        context.startActivity(intent);
     }
 
     class MainAdapter extends FragmentPagerAdapter implements TabBarView.IconTabProvider {

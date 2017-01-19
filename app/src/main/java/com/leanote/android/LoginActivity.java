@@ -11,6 +11,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.leanote.android.api.ApiProvider;
+import com.leanote.android.model.Account;
 import com.leanote.android.model.Authentication;
 import com.leanote.android.model.BaseModel;
 
@@ -62,14 +63,20 @@ public class LoginActivity extends AppCompatActivity {
                 observable.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Action1<BaseModel<Authentication>>() {
                     @Override
                     public void call(BaseModel<Authentication> authenticationBaseModel) {
-                        Log.e("TEST", "authentication == " + authenticationBaseModel.data);
+                        Account account = new Account();
+                        account.userId = authenticationBaseModel.data.userId;
+                        account.accessToken = authenticationBaseModel.data.accessToken;
+                        account.email = authenticationBaseModel.data.email;
+                        account.userName = authenticationBaseModel.data.userName;
+                        account.host = getHost();
+                        account.save();
+                        MainActivity.show(LoginActivity.this);
+                        finish();
                     }
-
                 }, new Action1<Throwable>() {
                     @Override
                     public void call(Throwable throwable) {
                         throwable.printStackTrace();
-                        Log.e("TEST", "throwable");
                     }
                 });
                 break;

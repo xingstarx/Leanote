@@ -2,8 +2,13 @@ package com.leanote.android.database;
 
 import com.leanote.android.model.Account;
 import com.leanote.android.model.Account_Table;
+import com.leanote.android.model.Notebook;
+import com.leanote.android.model.Notebook_Table;
 import com.raizlabs.android.dbflow.annotation.Database;
+import com.raizlabs.android.dbflow.sql.language.Method;
 import com.raizlabs.android.dbflow.sql.language.SQLite;
+
+import java.util.List;
 
 @Database(name = "leanote_db", version = 1)
 public class AppDataBase {
@@ -191,13 +196,19 @@ public class AppDataBase {
 //                .querySingle();
 //    }
 //
-//    public static List<Notebook> getAllNotebook(String userId) {
-//        return SQLite.select()
-//                .from(Notebook.class)
-//                .where(Notebook_Table.userId.eq(userId))
-//                .and(Notebook_Table.isDeletedOnServer.eq(false))
-//                .queryList();
-//    }
+    public static List<Notebook> getAllNotebook(String userId) {
+        return SQLite.select()
+                .from(Notebook.class)
+                .where(Notebook_Table.userId.eq(userId))
+                .and(Notebook_Table.isDeletedOnServer.eq(false))
+                .queryList();
+    }
+
+    public static int getMaxNoteBookUsn() {
+        return SQLite.select(Method.ALL_PROPERTY, Method.max(Notebook_Table.usn)).from(Notebook.class).querySingle().usn;
+    }
+
+
 //
 //    public static List<Notebook> getRootNotebooks(String userId) {
 //        return SQLite.select()

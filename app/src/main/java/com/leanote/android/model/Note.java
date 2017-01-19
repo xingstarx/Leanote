@@ -9,6 +9,7 @@ import com.leanote.android.utils.TimeUtils;
 import com.raizlabs.android.dbflow.annotation.Column;
 import com.raizlabs.android.dbflow.annotation.PrimaryKey;
 import com.raizlabs.android.dbflow.annotation.Table;
+import com.raizlabs.android.dbflow.annotation.Unique;
 import com.raizlabs.android.dbflow.structure.BaseModel;
 
 
@@ -21,76 +22,71 @@ import java.util.List;
  */
 @Table(name = "Note", database = AppDataBase.class)
 public class Note extends BaseModel implements Serializable {
-
-    @SerializedName("Ok")
-    boolean isOk = true;
-    @SerializedName("Msg")
-    String msg;
-
+    @Unique
     @Column(name = "noteId")
     @SerializedName("NoteId")
-    String noteId = "";
+    public String noteId = "";
     @Column(name = "notebookId")
     @SerializedName("NotebookId")
-    String noteBookId = "";
+    public String noteBookId = "";
     @Column(name = "userId")
     @SerializedName("UserId")
-    String userId = "";
+    public String userId = "";
     @Column(name = "title")
     @SerializedName("Title")
-    String title = "";
+    public String title = "";
     @Column(name = "content")
     @SerializedName("Content")
-    String content = "";
+    public String content = "";
     @Column(name = "isMarkDown")
     @SerializedName("IsMarkdown")
-    boolean isMarkDown;
+    public boolean isMarkDown;
     @Column(name = "isTrash")
     @SerializedName("IsTrash")
-    boolean isTrash;
+    public boolean isTrash;
     @Column(name = "isDeleted")
     @SerializedName("IsDeleted")
-    boolean isDeleted;
+    public boolean isDeleted;
     @Column(name = "isBlog")
     @SerializedName("IsBlog")
-    boolean isPublicBlog;
+    public boolean isPublicBlog;
     @Column(name = "usn")
     @SerializedName("Usn")
-    int usn;
+    public int usn;
 
     @SerializedName("Tags")
-    List<String> tagData;
+    public List<String> tagData;
     @SerializedName("Files")
-    List<NoteFile> noteFiles;
+    public List<NoteFile> noteFiles;
     @SerializedName("UpdatedTime")
-    String updatedTimeData = "";
+    public String updatedTimeData = "";
     @SerializedName("CreatedTime")
-    String createdTimeData = "";
+    public String createdTimeData = "";
     @SerializedName("PublicTime")
-    String publicTimeData = "";
+    public String publicTimeData = "";
 
     @Column(name = "id")
     @PrimaryKey(autoincrement = true)
-    Long id;
-    Long localNotebookId;
+    public Long id;
+    public Long localNotebookId;
     @Column(name = "desc")
-    String desc = "";
+    public String desc = "";
     @Column(name = "noteAbstract")
-    String noteAbstract = "";
-    String fileIds;
+    public String noteAbstract = "";
+    public String fileIds;
     @Column(name = "isDirty")
-    boolean isDirty;
+    public boolean isDirty;
     @Column(name = "isUploading")
-    boolean isUploading;
+    public boolean isUploading;
     @Column(name = "createdTime")
-    long createdTime;
+    public long createdTime;
     @Column(name = "updatedTime")
-    long updatedTime;
+    public long updatedTime;
     @Column(name = "publicTime")
     long publicTime;
     @Column(name = "tags")
-    String tags = "";
-    boolean uploadSucc = true;
+    public String tags = "";
+    public boolean uploadSucc = true;
 
     public long getCreatedTimeVal() {
         return createdTime;
@@ -246,31 +242,6 @@ public class Note extends BaseModel implements Serializable {
     public void setPublicTime(String publicTime) {
     }
 
-    @Override
-    public String toString() {
-        return "Note{" +
-                "id=" + id +
-                ", noteId='" + noteId + '\'' +
-                ", noteBookId='" + noteBookId + '\'' +
-                ", userId='" + userId + '\'' +
-                ", title='" + title + '\'' +
-                ", desc='" + desc + '\'' +
-                ", tags='" + tags + '\'' +
-                ", noteAbstract='" + noteAbstract + '\'' +
-                ", content='" + content + '\'' +
-                ", fileIds='" + fileIds + '\'' +
-                ", isMarkDown=" + isMarkDown +
-                ", isTrash=" + isTrash +
-                ", isDeleted=" + isDeleted +
-                ", isDirty=" + isDirty +
-                ", isPublicBlog=" + isPublicBlog +
-                ", createdTime='" + createdTime + '\'' +
-                ", updatedTime='" + updatedTime + '\'' +
-                ", publicTime='" + publicTime + '\'' +
-                ", usn=" + usn +
-                '}';
-    }
-
     public boolean hasChanges(Note otherNote) {
         return otherNote == null
                 || isChanged("title", title, otherNote.title)
@@ -362,14 +333,6 @@ public class Note extends BaseModel implements Serializable {
         this.localNotebookId = localNotebookId;
     }
 
-    public boolean isOk() {
-        return isOk;
-    }
-
-    public String getMsg() {
-        return msg;
-    }
-
     public static class UpdateTimeComparetor implements Comparator<Note> {
         @Override
         public int compare(Note lhs, Note rhs) {
@@ -383,5 +346,38 @@ public class Note extends BaseModel implements Serializable {
                 return 0;
             }
         }
+    }
+
+    @Override
+    public String toString() {
+        return "Note{" +
+                "noteId='" + noteId + '\'' +
+                ", noteBookId='" + noteBookId + '\'' +
+                ", userId='" + userId + '\'' +
+                ", title='" + title + '\'' +
+                ", content='" + content + '\'' +
+                ", isMarkDown=" + isMarkDown +
+                ", isTrash=" + isTrash +
+                ", isDeleted=" + isDeleted +
+                ", isPublicBlog=" + isPublicBlog +
+                ", usn=" + usn +
+                ", tagData=" + tagData +
+                ", noteFiles=" + noteFiles +
+                ", updatedTimeData='" + updatedTimeData + '\'' +
+                ", createdTimeData='" + createdTimeData + '\'' +
+                ", publicTimeData='" + publicTimeData + '\'' +
+                ", id=" + id +
+                ", localNotebookId=" + localNotebookId +
+                ", desc='" + desc + '\'' +
+                ", noteAbstract='" + noteAbstract + '\'' +
+                ", fileIds='" + fileIds + '\'' +
+                ", isDirty=" + isDirty +
+                ", isUploading=" + isUploading +
+                ", createdTime=" + createdTime +
+                ", updatedTime=" + updatedTime +
+                ", publicTime=" + publicTime +
+                ", tags='" + tags + '\'' +
+                ", uploadSucc=" + uploadSucc +
+                '}';
     }
 }

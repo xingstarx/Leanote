@@ -5,57 +5,51 @@ import com.leanote.android.database.AppDataBase;
 import com.raizlabs.android.dbflow.annotation.Column;
 import com.raizlabs.android.dbflow.annotation.PrimaryKey;
 import com.raizlabs.android.dbflow.annotation.Table;
+import com.raizlabs.android.dbflow.annotation.Unique;
 import com.raizlabs.android.dbflow.structure.BaseModel;
 
 
-/**
- * Created by binnchx on 11/1/15.
- */
 @Table(name = "Notebook", database = AppDataBase.class)
-public class Notebook extends BaseModel {
-
-    @SerializedName("Ok")
-    boolean isOk = true;
-    @SerializedName("Msg")
-    String msg;
+public class Notebook extends BaseModel{
 
     @Column(name = "id")
     @PrimaryKey(autoincrement = true)
-    long id;
+    public long id;
+    @Unique
     @Column(name = "notebookId")
     @SerializedName("NotebookId")
-    String notebookId;
+    public String notebookId;
     @Column(name = "parentNotebookId")
     @SerializedName("ParentNotebookId")
-    String parentNotebookId;
+    public String parentNotebookId;
     @Column(name = "userId")
     @SerializedName("UserId")
-    String userId;
+    public String userId;
     @Column(name = "title")
     @SerializedName("Title")
-    String title;
-    String urlTitle;
+    public String title;
+    public String urlTitle;
     @Column(name = "seq")
     @SerializedName("Seq")
-    int seq;
+    public int seq;
     @SerializedName("IsBlog")
-    boolean isBlog;
+    public boolean isBlog;
     @Column(name = "createdTime")
     @SerializedName("CreatedTime")
-    String createTime;
+    public String createTime;
     @Column(name = "updatedTime")
     @SerializedName("UpdatedTime")
-    String updateTime;
+    public String updateTime;
     @Column(name = "isDirty")
-    boolean isDirty;
+    public boolean isDirty;
     @Column(name = "isDeletedOnServer")
     @SerializedName("IsDeleted")
-    boolean isDeleted;
+    public boolean isDeleted;
     @Column(name = "isTrash")
-    boolean isTrash;
+    public boolean isTrash;
     @Column(name = "usn")
     @SerializedName("Usn")
-    int usn;
+    public int usn;
 
     public String getCreateTime() {
         return createTime;
@@ -170,11 +164,23 @@ public class Notebook extends BaseModel {
     }
 
 
-    public boolean isOk() {
-        return isOk;
-    }
-
-    public String getMsg() {
-        return msg;
+    @Override
+    public String toString() {
+        return "Notebook{" +
+                "id=" + id +
+                ", notebookId='" + notebookId + '\'' +
+                ", parentNotebookId='" + parentNotebookId + '\'' +
+                ", userId='" + userId + '\'' +
+                ", title='" + title + '\'' +
+                ", urlTitle='" + urlTitle + '\'' +
+                ", seq=" + seq +
+                ", isBlog=" + isBlog +
+                ", createTime='" + createTime + '\'' +
+                ", updateTime='" + updateTime + '\'' +
+                ", isDirty=" + isDirty +
+                ", isDeleted=" + isDeleted +
+                ", isTrash=" + isTrash +
+                ", usn=" + usn +
+                '}';
     }
 }

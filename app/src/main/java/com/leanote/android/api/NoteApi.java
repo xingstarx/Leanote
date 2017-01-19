@@ -1,6 +1,7 @@
 package com.leanote.android.api;
 
 
+import com.leanote.android.model.BaseModel;
 import com.leanote.android.model.Note;
 import com.leanote.android.model.UpdateRe;
 
@@ -16,11 +17,12 @@ import retrofit2.http.POST;
 import retrofit2.http.Part;
 import retrofit2.http.PartMap;
 import retrofit2.http.Query;
+import rx.Observable;
 
 public interface NoteApi {
 
     @GET("note/getSyncNotes")
-    Call<List<Note>> getSyncNotes(@Query("afterUsn") int afterUsn, @Query("maxEntry") int maxEntry);
+    Observable<BaseModel<List<Note>>> getSyncNotes(@Query("afterUsn") int afterUsn, @Query("maxEntry") int maxEntry);
 
     @GET("note/getNotes")
     Call<List<Note>> getNotes(@Query("notebookId") String notebookId);

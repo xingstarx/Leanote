@@ -14,53 +14,44 @@ public class Account extends BaseModel {
     public static final int EDITOR_RICH_TEXT = 0;
     public static final int EDITOR_MARKDOWN = 1;
 
-    @SerializedName("Ok")
-    boolean isOk;
-    @SerializedName("Msg")
-    String msg;
-
     @Column(name = "id")
     @PrimaryKey(autoincrement = true)
     @SerializedName("LocalUserId")
-    long localUserId;
+    public long localUserId;
     @Column(name = "userId")
     @SerializedName("UserId")
-    String userId = "";
+    public String userId = "";
     @Column(name = "userName")
     @SerializedName("Username")
-    String userName = "";
+    public String userName = "";
     @Column(name = "email")
     @SerializedName("Email")
-    String email = "";
+    public String email = "";
     @Column(name = "verified")
     @SerializedName("Verified")
-    boolean verified;
+    public boolean verified;
     @Column(name = "avatar")
     @SerializedName("Avatar")
-    String avatar = "";
+    public String avatar = "";
     @Column(name = "token")
-    @SerializedName("Token")
+    public @SerializedName("Token")
     String accessToken = "";
     @Column(name = "defaultEditor")
-    int defaultEditor = EDITOR_MARKDOWN;
+    public int defaultEditor = EDITOR_MARKDOWN;
     @Column(name = "host")
     @SerializedName("Host")
-    String host = "";
+    public String host = "";
     @Column(name = "noteUsn")
-    int noteUsn;
+    public int noteUsn;
     @Column(name = "notebookUsn")
-    int notebookUsn;
+    public int notebookUsn;
 
     @Deprecated
     @Column(name = "lastUsn")
     @SerializedName("LastSyncUsn")
-    int lastSyncUsn;
+    public  int lastSyncUsn;
 
     public Account() {
-    }
-
-    public boolean isOk() {
-        return isOk;
     }
 
     public long getLocalUserId() {
@@ -102,10 +93,6 @@ public class Account extends BaseModel {
 
     public String getHost() {
         return host;
-    }
-
-    public String getMsg() {
-        return msg;
     }
 
     public void setAccessToken(String accessToken) {
@@ -164,9 +151,7 @@ public class Account extends BaseModel {
     @Override
     public String toString() {
         return "Account{" +
-                "isOk=" + isOk +
-                ", msg='" + msg + '\'' +
-                ", localUserId=" + localUserId +
+                "localUserId=" + localUserId +
                 ", userId='" + userId + '\'' +
                 ", userName='" + userName + '\'' +
                 ", email='" + email + '\'' +
