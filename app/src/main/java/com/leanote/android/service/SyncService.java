@@ -14,15 +14,19 @@ import com.badoo.mobile.util.WeakHandler;
 import com.leanote.android.api.ApiProvider;
 import com.leanote.android.api.NoteApi;
 import com.leanote.android.api.NotebookApi;
+import com.leanote.android.api.UserApi;
 import com.leanote.android.database.AppDataBase;
+import com.leanote.android.model.Account;
 import com.leanote.android.model.BaseModel;
 import com.leanote.android.model.Note;
 import com.leanote.android.model.Notebook;
+import com.leanote.android.model.SyncState;
 import com.raizlabs.android.dbflow.config.FlowManager;
 import com.raizlabs.android.dbflow.sql.language.Select;
 import com.raizlabs.android.dbflow.structure.database.DatabaseWrapper;
 import com.raizlabs.android.dbflow.structure.database.transaction.ITransaction;
 
+import java.io.IOException;
 import java.util.List;
 
 import rx.Observable;
@@ -45,6 +49,7 @@ public class SyncService extends Service {
     public static final int MSG_FETCH_ALL = 1;
     private NotebookApi mNotebookApi;
     private NoteApi mNoteApi;
+    private UserApi mUserApi;
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
@@ -66,6 +71,7 @@ public class SyncService extends Service {
         });
         mNotebookApi = ApiProvider.getInstance().getNotebookApi();
         mNoteApi = ApiProvider.getInstance().getNoteApi();
+        mUserApi = ApiProvider.getInstance().getUserApi();
     }
 
     @Override
@@ -97,64 +103,54 @@ public class SyncService extends Service {
     }
 
     private void fetchAll() {
-        mNotebookApi.getNotebooks().flatMap(new Func1<BaseModel<List<Notebook>>, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> call(final BaseModel<List<Notebook>> listBaseModel) {
-                FlowManager.getDatabase(AppDataBase.class).executeTransaction(new ITransaction() {
-                    @Override
-                    public void execute(DatabaseWrapper databaseWrapper) {
-                        List<Notebook> notebooks = listBaseModel.data;
-                        for (Notebook notebook : notebooks) {
-                            Log.e("TEST", "insert notebookId == " + notebook.notebookId);
+
+        try {
+            BaseModel<SyncState> syncStateModel = mUserApi.getSyncState().execute().body();
+            if (syncStateModel.data == null && !syncStateModel.ok) {
+                //// TODO: 17/1/19 get syncState error
+                return;
+            }
+            Account account = AppDataBase.getAccountWithToken();
+            account.lastSyncUsn = syncStateModel.data.mLastSyncUsn;
+            account.update();
+
+            final BaseModel<List<Notebook>> notebookModel = mNotebookApi.getCallNotebooks().execute().body();
+            if (notebookModel.data == null && !syncStateModel.ok) {
+                // TODO: 17/1/19 get notebooks error
+                return;
+            }
+            FlowManager.getDatabase(AppDataBase.class).executeTransaction(new ITransaction() {
+                @Override
+                public void execute(DatabaseWrapper databaseWrapper) {
+                    List<Notebook> notebooks = notebookModel.data;
+                    for (Notebook notebook : notebooks) {
+                        Log.e("TEST", "insert notebookId == " + notebook.notebookId + ", title == " + notebook.getTitle());
+                        if (!notebook.isDeleted) {
                             notebook.save(databaseWrapper);
                         }
                     }
-                });
-                final int maxNoteBookSun = AppDataBase.getMaxNoteBookUsn();
-                return Observable.create(new Observable.OnSubscribe<Integer>() {
-                    @Override
-                    public void call(Subscriber<? super Integer> subscriber) {
-                        for (int usn = 0; usn < maxNoteBookSun; usn += 20) {
-                            subscriber.onNext(usn);
-                        }
-                        subscriber.onCompleted();
-                    }
-                });
-            }
-        }).flatMap(new Func1<Integer, Observable<BaseModel<List<Note>>>>() {
-            @Override
-            public Observable<BaseModel<List<Note>>> call(Integer integer) {
-                return mNoteApi.getSyncNotes(integer, 20);
-            }
-        }).flatMap(new Func1<BaseModel<List<Note>>, Observable<BaseModel<List<Note>>>>() {
-            @Override
-            public Observable<BaseModel<List<Note>>> call(final BaseModel<List<Note>> listBaseModel) {
-                FlowManager.getDatabase(AppDataBase.class).executeTransaction(new ITransaction() {
-                    @Override
-                    public void execute(DatabaseWrapper databaseWrapper) {
-                        List<Note> notes = listBaseModel.data;
-                        for (Note note : notes) {
-                            Log.e("TEST", "insert noteId == " + note.noteId);
-                            note.save(databaseWrapper);
-                        }
-                    }
-                });
-                return Observable.just(listBaseModel);
-            }
-        })
-                .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Action1<BaseModel<List<Note>>>() {
-            @Override
-            public void call(BaseModel<List<Note>> listBaseModel) {
+                }
+            });
 
-                Log.e("TEST", "note invoked== ");
+            for (Notebook notebook : notebookModel.data) {
+                final BaseModel<List<Note>> noteModel = mNoteApi.getCallNotes(notebook.notebookId).execute().body();
+                if (noteModel.data == null && !noteModel.ok) {
+                    break;
+                }
+                for (Note note : noteModel.data) {
+                    Log.e("TEST", "insert noteId == " + note.noteId + ", title == " + note.title + ", note.notebookId == " + note.noteBookId);
+                    BaseModel<Note> contentNoteModel = mNoteApi.getNoteAndContent(note.noteId).execute().body();
+                    if (contentNoteModel.data == null && !contentNoteModel.ok) {
+                        break;
+                    }
+                    if (!contentNoteModel.data.isDeleted) {
+                        contentNoteModel.data.save();
+                    }
+                }
             }
-        }, new Action1<Throwable>() {
-            @Override
-            public void call(Throwable throwable) {
-                throwable.printStackTrace();
-                Log.e("TEST", "Error");
-            }
-        });
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 }

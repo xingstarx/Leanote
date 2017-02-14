@@ -24,11 +24,18 @@ public interface NoteApi {
     @GET("note/getSyncNotes")
     Observable<BaseModel<List<Note>>> getSyncNotes(@Query("afterUsn") int afterUsn, @Query("maxEntry") int maxEntry);
 
+    @GET("note/getSyncNotes")
+    Call<BaseModel<List<Note>>> getCallSyncNotes(@Query("afterUsn") int afterUsn, @Query("maxEntry") int maxEntry);
+
+
     @GET("note/getNotes")
-    Call<List<Note>> getNotes(@Query("notebookId") String notebookId);
+    Call<BaseModel<List<Note>>> getCallNotes(@Query("notebookId") String notebookId);
+
+    @GET("note/getNotes")
+    Observable<BaseModel<List<Note>>> getNotes(@Query("notebookId") String notebookId);
 
     @GET("note/getNoteAndContent")
-    Call<Note> getNoteAndContent(@Query("noteId") String noteId);
+    Call<BaseModel<Note>> getNoteAndContent(@Query("noteId") String noteId);
 
     @Multipart
     @POST("note/addNote")

@@ -17,7 +17,7 @@ public class JsonWrapperHelper {
             }
         }
         StringBuilder builder = new StringBuilder();
-        builder.append("{\"Ok\":false,\"Msg\":null,\"data\":").append(string).append("}");
+        builder.append("{\"Ok\":true,\"Msg\":null,\"data\":").append(string).append("}");
         return builder.toString();
     }
 }

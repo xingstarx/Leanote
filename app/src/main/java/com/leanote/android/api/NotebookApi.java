@@ -20,6 +20,9 @@ public interface NotebookApi {
     @GET("notebook/getNotebooks")
     Observable<BaseModel<List<Notebook>>> getNotebooks();
 
+    @GET("notebook/getNotebooks")
+    Call<BaseModel<List<Notebook>>> getCallNotebooks();
+
     @POST("notebook/addNotebook")
     Call<Notebook> addNotebook(@Query("title") String title, @Query("parentNotebookId") String parentId);
 }

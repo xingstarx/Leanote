@@ -258,14 +258,14 @@ public class AppDataBase {
 //                .execute();
 //    }
 //
-//    public static Account getAccount(String email, String host) {
-//        return SQLite.select()
-//                .from(Account.class)
-//                .where(Account_Table.email.eq(email))
-//                .and(Account_Table.host.eq(host))
-//                .querySingle();
-//    }
-//
+    public static Account getAccount(String email, String host) {
+        return SQLite.select()
+                .from(Account.class)
+                .where(Account_Table.email.eq(email))
+                .and(Account_Table.host.eq(host))
+                .querySingle();
+    }
+
     public static Account getAccountWithToken() {
         return SQLite.select()
                 .from(Account.class)

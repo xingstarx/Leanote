@@ -49,7 +49,7 @@ public class Account extends BaseModel {
     @Deprecated
     @Column(name = "lastUsn")
     @SerializedName("LastSyncUsn")
-    public  int lastSyncUsn;
+    public int lastSyncUsn;
 
     public Account() {
     }

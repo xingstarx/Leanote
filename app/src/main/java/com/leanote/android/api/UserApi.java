@@ -1,6 +1,7 @@
 package com.leanote.android.api;
 
 
+import com.leanote.android.model.BaseModel;
 import com.leanote.android.model.BaseResponse;
 import com.leanote.android.model.SyncState;
 import com.leanote.android.model.User;
@@ -21,5 +22,5 @@ public interface UserApi {
     Call<BaseResponse> updatePassword(@Query("oldPwd") String oldPwd, @Query("pwd") String pwd);
 
     @GET("user/getSyncState")
-    Call<SyncState> getSyncState();
+    Call<BaseModel<SyncState>> getSyncState();
 }

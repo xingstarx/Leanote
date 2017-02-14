@@ -3,18 +3,11 @@ package com.leanote.android.model;
 
 import com.google.gson.annotations.SerializedName;
 
-public class SyncState extends BaseResponse {
+public class SyncState {
     @SerializedName("LastSyncUsn")
-    private int mLastSyncUsn;
+    public int mLastSyncUsn;
 
     @SerializedName("LastSyncTime")
-    private long mLastSyncTime;
+    public long mLastSyncTime;
 
-    public int getLastSyncUsn() {
-        return mLastSyncUsn;
-    }
-
-    public long getLastSyncTime() {
-        return mLastSyncTime;
-    }
 }
