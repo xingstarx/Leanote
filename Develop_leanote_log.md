@@ -10,3 +10,6 @@ Leanote android app
 2. 获取所有的笔记本(notebook/getNotebooks)，不使用同步的方法(notebook/getSyncNotebooks),担心同步的方法，存在数据冗余
 3. 遍历每一个笔记本，获取笔记本下面的所有笔记，然后保存，同样不使用同步方法
 
+###文档目录结构
+
+1. 笔记本下面对应的是笔记，目录结构的形式跟forkhub 的风格类似
