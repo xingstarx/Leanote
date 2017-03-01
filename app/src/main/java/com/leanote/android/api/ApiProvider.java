@@ -1,5 +1,6 @@
 package com.leanote.android.api;
 
+import com.facebook.stetho.okhttp3.StethoInterceptor;
 import com.leanote.android.api.convert.LeaResponseConverterFactory;
 import com.leanote.android.database.AppDataBase;
 import com.leanote.android.model.Account;
@@ -57,6 +58,7 @@ public class ApiProvider {
                     }
                 })
                 .addNetworkInterceptor(interceptor)
+                .addNetworkInterceptor(new StethoInterceptor())
                 .build();
         mApiRetrofit = new Retrofit.Builder()
                 .baseUrl(host + "/api/")
