@@ -1,7 +1,6 @@
 package com.leanote.android.api.convert;
 
 
-import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.TypeAdapter;
@@ -28,7 +27,6 @@ public class LeaResponseBodyConverter<T> implements Converter<ResponseBody, T> {
     public T convert(ResponseBody value) throws IOException {
         String str = value.string();
         String jsonBean = JsonWrapperHelper.getWrapperJson(str);
-        Log.e("TEST", "jsonBean == " + jsonBean);
         Reader reader = new StringReader(jsonBean);
         JsonReader jsonReader = gson.newJsonReader(reader);
         try {

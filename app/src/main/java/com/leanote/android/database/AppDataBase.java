@@ -2,6 +2,8 @@ package com.leanote.android.database;
 
 import com.leanote.android.model.Account;
 import com.leanote.android.model.Account_Table;
+import com.leanote.android.model.NoteFile;
+import com.leanote.android.model.NoteFile_Table;
 import com.leanote.android.model.Notebook;
 import com.leanote.android.model.Notebook_Table;
 import com.raizlabs.android.dbflow.annotation.Database;
@@ -242,12 +244,12 @@ public class AppDataBase {
 //                .querySingle();
 //    }
 //
-//    public static NoteFile getNoteFileByServerId(String serverId) {
-//        return SQLite.select()
-//                .from(NoteFile.class)
-//                .where(NoteFile_Table.serverId.eq(serverId))
-//                .querySingle();
-//    }
+    public static NoteFile getNoteFileByServerId(String serverId) {
+        return SQLite.select()
+                .from(NoteFile.class)
+                .where(NoteFile_Table.serverFileId.eq(serverId))
+                .querySingle();
+    }
 //
 //    public static void deleteFileExcept(long noteLocalId, Collection<String> excepts) {
 //        SQLite.delete()

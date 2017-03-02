@@ -12,95 +12,32 @@ import com.raizlabs.android.dbflow.structure.BaseModel;
 public class NoteFile extends BaseModel {
 
     @Column(name = "noteLocalId")
-    long noteId;
-
-    @Column(name = "serverId")
-    @SerializedName("FileId")
-    String mServerId;
+    public long noteId;
 
     @PrimaryKey
-    @Column(name = "localId")
+    @Column(name = "localFileId")
     @SerializedName("LocalFileId")
-    String mLocalId;
+    public String localFileId;
 
-    @Column(name = "localPath")
-    String mLocalPath;
-
-    @SerializedName("Type")
-    String mType;
-
-    @SerializedName("Title")
-    String mTitle;
+    @Column(name = "serverFileId")
+    @SerializedName("FileId")
+    public String serverFileId;
 
     @SerializedName("HasBody")
-    boolean mHasBody;
+    public boolean hasBody;
 
     @Column(name = "isAttach")
     @SerializedName("IsAttach")
-    boolean mIsAttach;
+    public boolean isAttach;
 
+    @Column(name = "localPath")
+    public String localPath;
 
-    public long getNoteId() {
-        return noteId;
-    }
+    @Column(name = "type")
+    @SerializedName("Type")
+    public String type;
 
-    public void setNoteId(long noteId) {
-        this.noteId = noteId;
-    }
+    @SerializedName("Title")
+    public String title;
 
-    public String getServerId() {
-        return mServerId;
-    }
-
-    public String getLocalId() {
-        return mLocalId;
-    }
-
-    public String getType() {
-        return mType;
-    }
-
-    public String getTitle() {
-        return mTitle;
-    }
-
-    public boolean isHasBody() {
-        return mHasBody;
-    }
-
-    public boolean isAttach() {
-        return mIsAttach;
-    }
-
-    public String getLocalPath() {
-        return mLocalPath;
-    }
-
-    public void setServerId(String mServerId) {
-        this.mServerId = mServerId;
-    }
-
-    public void setLocalId(String mLocalId) {
-        this.mLocalId = mLocalId;
-    }
-
-    public void setLocalPath(String mLocalPath) {
-        this.mLocalPath = mLocalPath;
-    }
-
-    public void setType(String mType) {
-        this.mType = mType;
-    }
-
-    public void setTitle(String mTitle) {
-        this.mTitle = mTitle;
-    }
-
-    public void setHasBody(boolean mHasBody) {
-        this.mHasBody = mHasBody;
-    }
-
-    public void setIsAttach(boolean mIsAttach) {
-        this.mIsAttach = mIsAttach;
-    }
 }
