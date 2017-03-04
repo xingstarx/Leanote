@@ -102,14 +102,18 @@ public class SyncService extends Service {
     }
 
     private void fetchAll() {
-
         try {
             BaseModel<SyncState> syncStateModel = mUserApi.getSyncState().execute().body();
             if (syncStateModel.data == null && !syncStateModel.ok) {
                 return;
             }
             Account account = AppDataBase.getAccountWithToken();
-            account.lastSyncUsn = syncStateModel.data.mLastSyncUsn;
+            int maxUsn = Math.max(account.notebookUsn, account.noteUsn);
+            if (syncStateModel.data.lastSyncUsn <= maxUsn) {
+                return;
+            }
+            account.noteUsn = syncStateModel.data.lastSyncUsn;
+            account.notebookUsn = syncStateModel.data.lastSyncUsn;
             account.update();
 
             final BaseModel<List<Notebook>> notebookModel = mNotebookApi.getCallNotebooks().execute().body();

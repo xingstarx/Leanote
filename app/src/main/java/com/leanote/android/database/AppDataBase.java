@@ -2,8 +2,10 @@ package com.leanote.android.database;
 
 import com.leanote.android.model.Account;
 import com.leanote.android.model.Account_Table;
+import com.leanote.android.model.Note;
 import com.leanote.android.model.NoteFile;
 import com.leanote.android.model.NoteFile_Table;
+import com.leanote.android.model.Note_Table;
 import com.leanote.android.model.Notebook;
 import com.leanote.android.model.Notebook_Table;
 import com.raizlabs.android.dbflow.annotation.Database;
@@ -151,15 +153,15 @@ public class AppDataBase {
 //        return getNotesByTagId(tag.getId());
 //    }
 //
-//    public static List<Note> getAllNotes(String userId) {
-//        return SQLite.select()
-//                .from(Note.class)
-//                .where(Note_Table.userId.eq(userId))
-//                .and(Note_Table.isTrash.eq(false))
-//                .and(Note_Table.isDeleted.eq(false))
-//                .and(Note_Table.isTrash.eq(false))
-//                .queryList();
-//    }
+    public static List<Note> getAllNotes(String userId) {
+        return SQLite.select()
+                .from(Note.class)
+                .where(Note_Table.userId.eq(userId))
+                .and(Note_Table.isTrash.eq(false))
+                .and(Note_Table.isDeleted.eq(false))
+                .and(Note_Table.isTrash.eq(false))
+                .queryList();
+    }
 //
 //    public static Notebook getNotebookByServerId(String serverId) {
 //        return SQLite.select()

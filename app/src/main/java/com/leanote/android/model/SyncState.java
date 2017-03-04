@@ -5,9 +5,9 @@ import com.google.gson.annotations.SerializedName;
 
 public class SyncState {
     @SerializedName("LastSyncUsn")
-    public int mLastSyncUsn;
+    public int lastSyncUsn;
 
     @SerializedName("LastSyncTime")
-    public long mLastSyncTime;
+    public long lastSyncTime;
 
 }
