@@ -7,6 +7,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -103,7 +104,11 @@ public class HeadlineFragment extends Fragment {
             ViewHolder viewHolder = (ViewHolder) holder;
             Note note = notes.get(position);
             viewHolder.title.setText(note.title);
-            viewHolder.content.setText(note.content.length() > 500 ? note.content.substring(0, 500) : note.content);
+            if (note.isMarkDown) {
+                viewHolder.content.setText(note.noteAbstract);
+            } else {
+                viewHolder.content.setText(Html.fromHtml(note.noteAbstract).toString());
+            }
             viewHolder.updateTime.setText(TimeUtils.toYearFormat(note.updatedTime));
         }
 

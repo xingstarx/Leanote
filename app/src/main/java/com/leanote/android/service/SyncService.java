@@ -144,8 +144,14 @@ public class SyncService extends Service {
                         break;
                     }
                     if (!contentNoteModel.data.isDeleted) {
-                        String content = convertToLocalImageLinkForRichText(note.id, contentNoteModel.data.content);
+                        String content;
+                        if (contentNoteModel.data.isMarkDown) {
+                            content = convertToLocalImageLinkForMD(note.id, contentNoteModel.data.content);
+                        } else {
+                            content = convertToLocalImageLinkForRichText(note.id, contentNoteModel.data.content);
+                        }
                         note.content = content;
+                        note.noteAbstract = content.length() < 500 ? content : content.substring(0, 500);
                         note.update();
                     }
                 }
