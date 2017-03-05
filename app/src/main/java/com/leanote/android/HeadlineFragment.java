@@ -109,7 +109,7 @@ public class HeadlineFragment extends Fragment {
             } else {
                 viewHolder.content.setText(Html.fromHtml(note.noteAbstract).toString());
             }
-            viewHolder.updateTime.setText(TimeUtils.toYearFormat(note.updatedTime));
+            viewHolder.updateTime.setText(TimeUtils.toYearFormat(TimeUtils.toTimestamp(note.updatedTime)));
         }
 
         @Override

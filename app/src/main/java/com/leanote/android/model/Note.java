@@ -55,12 +55,7 @@ public class Note extends BaseModel implements Serializable {
     public List<String> tagData;
     @SerializedName("Files")
     public List<NoteFile> noteFiles;
-    @SerializedName("UpdatedTime")
-    public String updatedTimeData = "";
-    @SerializedName("CreatedTime")
-    public String createdTimeData = "";
-    @SerializedName("PublicTime")
-    public String publicTimeData = "";
+
 
     @Column(name = "id")
     @PrimaryKey(autoincrement = true)
@@ -76,11 +71,14 @@ public class Note extends BaseModel implements Serializable {
     @Column(name = "isUploading")
     public boolean isUploading;
     @Column(name = "createdTime")
-    public long createdTime;
+    @SerializedName("CreatedTime")
+    public String createdTime;
     @Column(name = "updatedTime")
-    public long updatedTime;
+    @SerializedName("UpdatedTime")
+    public String updatedTime;
     @Column(name = "publicTime")
-    long publicTime;
+    @SerializedName("PublicTime")
+    public String publicTime;
     @Column(name = "tags")
     public String tags = "";
     public boolean uploadSucc = true;
@@ -106,12 +104,6 @@ public class Note extends BaseModel implements Serializable {
         tags = tagBuilder.toString();
     }
 
-    public void updateTime() {
-        createdTime = TimeUtils.toTimestamp(createdTimeData);
-        updatedTime = TimeUtils.toTimestamp(updatedTimeData);
-        publicTime = TimeUtils.toTimestamp(publicTimeData);
-    }
-
     public boolean hasChanges(Note otherNote) {
         return otherNote == null
                 || isChanged("title", title, otherNote.title)
@@ -129,20 +121,5 @@ public class Note extends BaseModel implements Serializable {
             Log.i("Note", message + " changed, modified=" + r);
         }
         return !isEqual;
-    }
-
-    public static class UpdateTimeComparetor implements Comparator<Note> {
-        @Override
-        public int compare(Note lhs, Note rhs) {
-            long lTime = lhs.updatedTime;
-            long rTime = rhs.updatedTime;
-            if (lTime > rTime) {
-                return -1;
-            } else if (lTime < rTime) {
-                return 1;
-            } else {
-                return 0;
-            }
-        }
     }
 }
