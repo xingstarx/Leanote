@@ -14,3 +14,9 @@ Leanote android app
 ###文档目录结构
 
 1. 笔记本下面对应的是笔记，目录结构的形式跟forkhub 的风格类似
+
+### RxBus
+使用RxBus作为事件总线
+
+### XRecyclerView
+用XRecyclerView 实现下拉刷新的功能
