@@ -22,6 +22,8 @@ import com.leanote.android.model.Note;
 import com.leanote.android.model.NoteFile;
 import com.leanote.android.model.Notebook;
 import com.leanote.android.model.SyncState;
+import com.leanote.android.rxbus.RxBus;
+import com.leanote.android.rxbus.SyncEvent;
 import com.leanote.android.utils.StringUtils;
 import com.raizlabs.android.dbflow.config.FlowManager;
 import com.raizlabs.android.dbflow.structure.database.DatabaseWrapper;
@@ -110,6 +112,7 @@ public class SyncService extends Service {
             Account account = AppDataBase.getAccountWithToken();
             int maxUsn = Math.max(account.notebookUsn, account.noteUsn);
             if (syncStateModel.data.lastSyncUsn <= maxUsn) {
+                RxBus.getInstance().send(new SyncEvent());
                 return;
             }
             account.noteUsn = syncStateModel.data.lastSyncUsn;
@@ -156,6 +159,7 @@ public class SyncService extends Service {
                     }
                 }
             }
+            RxBus.getInstance().send(new SyncEvent());
         } catch (IOException e) {
             e.printStackTrace();
         }

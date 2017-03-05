@@ -8,6 +8,7 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +18,8 @@ import com.jcodecraeer.xrecyclerview.ProgressStyle;
 import com.jcodecraeer.xrecyclerview.XRecyclerView;
 import com.leanote.android.database.AppDataBase;
 import com.leanote.android.model.Note;
+import com.leanote.android.rxbus.RxBus;
+import com.leanote.android.rxbus.SyncEvent;
 import com.leanote.android.utils.TimeUtils;
 
 import java.util.ArrayList;
@@ -24,13 +27,14 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import rx.functions.Action1;
 
 /**
  * Created by xiongxingxing on 17/1/10.
  */
 
 public class HeadlineFragment extends Fragment {
-
+    public static final String TAG = "HeadlineFragment";
     @BindView(R.id.recycler_view)
     XRecyclerView mRecyclerView;
     HeadLineAdapter mHeadLineAdapter;
@@ -75,9 +79,22 @@ public class HeadlineFragment extends Fragment {
             }
         });
 
+        RxBus.getInstance().toObservable().subscribe(new Action1<Object>() {
+            @Override
+            public void call(Object event) {
+                if (event instanceof SyncEvent) {
+                    Log.e(TAG, "event is SyncEvent!");
+                    mRecyclerView.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            mRecyclerView.refresh();
+                        }
+                    });
+                }
+            }
+        });
         mHeadLineAdapter = new HeadLineAdapter(new ArrayList<Note>());
         mRecyclerView.setAdapter(mHeadLineAdapter);
-        mRecyclerView.refresh();
     }
 
 
