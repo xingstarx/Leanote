@@ -18,5 +18,9 @@
     <string name="action_custom_website">Custom website</string>
     <string name="action_forget_password">Forget password?</string>
     <string name="edittext_hint_custom_website_url">Your custom website url</string>
+    <string name="activity_login_progress_dialog_message">Sign In&#8230;</string>
+    <string name="activity_login_email_or_pwd_invalid">Email or password not empty</string>
 
+    <string name="network_is_unavailable">Network is unavailable</string>
+    <string name="network_error">Network error</string>
 </resources>

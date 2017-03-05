@@ -11,6 +11,8 @@
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:layout_marginBottom="20dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
         android:background="@android:color/white"
         android:orientation="vertical">
 
@@ -60,7 +62,7 @@
         android:gravity="center"
         android:minHeight="48dp"
         android:text="@string/title_activity_login"
-        android:textColor="@android:color/white" />
+        android:textColor="@color/textsize_color_selector" />
 
     <TextView
         android:id="@+id/forget_pwd"
@@ -72,7 +74,7 @@
         android:gravity="center"
         android:padding="4dp"
         android:text="@string/action_forget_password"
-        android:textColor="@android:color/white" />
+        android:textColor="@color/textsize_color_selector" />
 
     <ImageView
         android:layout_width="140dp"
@@ -92,7 +94,7 @@
         android:gravity="center"
         android:padding="4dp"
         android:text="@string/action_sign_up"
-        android:textColor="@android:color/white" />
+        android:textColor="@color/textsize_color_selector" />
 
     <TextView
         android:id="@+id/add_custom_website"
@@ -104,6 +106,6 @@
         android:gravity="center"
         android:padding="4dp"
         android:text="@string/action_custom_website"
-        android:textColor="@android:color/white" />
+        android:textColor="@color/textsize_color_selector" />
 
 </RelativeLayout>
