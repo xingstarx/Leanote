@@ -20,3 +20,6 @@ Leanote android app
 
 ### XRecyclerView
 用XRecyclerView 实现下拉刷新的功能
+
+### NoteActivity 和 EditNoteActivity
+预览笔记，包括预览富文本和markdown
