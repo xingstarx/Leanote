@@ -2,9 +2,11 @@ package com.leanote.android.editor;
 
 
 import android.annotation.SuppressLint;
+import android.os.Build;
 import android.webkit.WebView;
 
 import com.apkfuns.logutils.LogUtils;
+import com.leanote.android.BuildConfig;
 import com.leanote.android.utils.HtmlUtils;
 
 import java.util.Locale;
@@ -31,6 +33,9 @@ public class RichTextEditor extends Editor implements TinnyMceCallback.TinnyMceL
         mWebView.setWebViewClient(new EditorClient());
         mWebView.setWebChromeClient(new EditorChromeClient());
         mWebView.addJavascriptInterface(new TinnyMceCallback(this), JS_CALLBACK_HANDLER);
+        if (BuildConfig.DEBUG && Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            WebView.setWebContentsDebuggingEnabled(true);
+        }
         mWebView.loadUrl("file:///android_asset/RichTextEditor/editor.html?lang=" + Locale.getDefault().getLanguage());
     }
 

@@ -12,7 +12,9 @@ public class Application extends android.app.Application {
     public void onCreate() {
         super.onCreate();
         FlowManager.init(new FlowConfig.Builder(this).build());
-        Stetho.initializeWithDefaults(this);
+        if (BuildConfig.DEBUG) {
+            Stetho.initializeWithDefaults(this);
+        }
         JodaTimeAndroid.init(this);
     }
 }
