@@ -118,14 +118,20 @@ public class HeadlineFragment extends Fragment {
 
         @Override
         public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-            ViewHolder viewHolder = (ViewHolder) holder;
-            Note note = notes.get(position);
+            final ViewHolder viewHolder = (ViewHolder) holder;
+            final Note note = notes.get(position);
             viewHolder.title.setText(note.title);
             if (note.isMarkDown) {
                 viewHolder.content.setText(note.noteAbstract);
             } else {
                 viewHolder.content.setText(Html.fromHtml(note.noteAbstract).toString());
             }
+            viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    NoteActivity.showPreNote(viewHolder.itemView.getContext(), note);
+                }
+            });
             viewHolder.updateTime.setText(TimeUtils.toYearFormat(TimeUtils.toTimestamp(note.updatedTime)));
         }
 

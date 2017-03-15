@@ -6,4 +6,5 @@
     <color name="bg_sign_in_button">#085180</color>
     <color name="bg_logo">#165ea8</color>
     <color name="line_gray">#ececec</color>
+    <color name="white">#fff</color>
 </resources>

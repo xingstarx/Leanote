@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">Leanote</string>
     <string name="title_activity_login">Sign in</string>
+    <string name="title_activity_pre_note">Note</string>
 
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
