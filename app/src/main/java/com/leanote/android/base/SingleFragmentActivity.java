@@ -3,6 +3,7 @@ package com.leanote.android.base;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.view.MenuItem;
 
 import com.leanote.android.R;
 
@@ -25,5 +26,15 @@ public abstract class SingleFragmentActivity extends BaseActivity {
                     .add(R.id.fragmentContainer, fragment)
                     .commit();
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

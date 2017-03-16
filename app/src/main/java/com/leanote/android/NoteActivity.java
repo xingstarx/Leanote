@@ -9,9 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
-import android.widget.TextView;
 
-import com.apkfuns.logutils.LogUtils;
 import com.leanote.android.base.SingleFragmentActivity;
 import com.leanote.android.editor.Editor;
 import com.leanote.android.editor.RichTextEditor;
