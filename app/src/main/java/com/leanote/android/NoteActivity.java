@@ -11,10 +11,12 @@ import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.widget.TextView;
 
+import com.apkfuns.logutils.LogUtils;
 import com.leanote.android.base.SingleFragmentActivity;
 import com.leanote.android.editor.Editor;
 import com.leanote.android.editor.RichTextEditor;
 import com.leanote.android.model.Note;
+import com.leanote.android.utils.ContextUtils;
 
 import java.util.Map;
 
@@ -78,6 +80,7 @@ public class NoteActivity extends SingleFragmentActivity {
         public void onPageLoaded() {
             mEditor.setTitle(mNote.title);
             mEditor.setContent(mNote.content);
+            mEditor.setEditingEnabled(false);
         }
 
         @Override
@@ -102,7 +105,7 @@ public class NoteActivity extends SingleFragmentActivity {
 
         @Override
         public void linkTo(String url) {
-
+            ContextUtils.openUrl(getContext(), url);
         }
 
         @Override

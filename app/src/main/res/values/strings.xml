@@ -2,6 +2,7 @@
     <string name="app_name">Leanote</string>
     <string name="title_activity_login">Sign in</string>
     <string name="title_activity_pre_note">Note</string>
+    <string name="cant_open_url">Can\'t open this url</string>
 
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
