@@ -45,6 +45,7 @@
             android:orientation="vertical"
             android:layout_height="match_parent">
             <ImageView
+                android:id="@+id/menu_edit"
                 android:layout_width="26dp"
                 android:src="@drawable/ic_menu_edit"
                 android:layout_height="26dp" />
