@@ -25,4 +25,10 @@
 
     <string name="network_is_unavailable">Network is unavailable</string>
     <string name="network_error">Network error</string>
+
+    <!-- note -->
+    <string name="note_menu_move_notebook">Move to</string>
+    <string name="note_menu_edit">Edit</string>
+    <string name="note_menu_refresh">Refresh</string>
+    <string name="note_menu_more">More</string>
 </resources>

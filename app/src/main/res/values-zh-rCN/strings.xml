@@ -25,4 +25,10 @@
     <string name="network_is_unavailable">网络不可用</string>
     <string name="network_error">网络错误</string>
 
+    <!-- note -->
+    <string name="note_menu_move_notebook">移动到</string>
+    <string name="note_menu_edit">编辑</string>
+    <string name="note_menu_refresh">刷新</string>
+    <string name="note_menu_more">更多</string>
+
 </resources>

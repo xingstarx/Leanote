@@ -31,7 +31,7 @@
                 android:src="@drawable/ic_menu_move_notebook"
                 android:layout_height="26dp" />
             <TextView
-                android:text="移动到"
+                android:text="@string/note_menu_move_notebook"
                 android:layout_width="wrap_content"
                 android:gravity="center"
                 android:textSize="12sp"
@@ -49,7 +49,7 @@
                 android:src="@drawable/ic_menu_edit"
                 android:layout_height="26dp" />
             <TextView
-                android:text="编辑"
+                android:text="@string/note_menu_edit"
                 android:layout_width="wrap_content"
                 android:gravity="center"
                 android:textSize="12sp"
@@ -67,7 +67,7 @@
                 android:src="@drawable/ic_menu_refresh_gray"
                 android:layout_height="26dp" />
             <TextView
-                android:text="刷新"
+                android:text="@string/note_menu_refresh"
                 android:layout_width="wrap_content"
                 android:gravity="center"
                 android:textSize="12sp"
@@ -85,7 +85,7 @@
                 android:src="@drawable/ic_menu_more"
                 android:layout_height="26dp" />
             <TextView
-                android:text="更多"
+                android:text="@string/note_menu_more"
                 android:layout_width="wrap_content"
                 android:gravity="center"
                 android:textSize="12sp"
