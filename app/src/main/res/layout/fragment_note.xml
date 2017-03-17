@@ -27,6 +27,7 @@
             android:layout_height="match_parent">
 
             <ImageView
+                android:id="@+id/menu_move"
                 android:layout_width="26dp"
                 android:src="@drawable/ic_menu_move_notebook"
                 android:layout_height="26dp" />

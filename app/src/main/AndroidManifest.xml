@@ -48,6 +48,12 @@
             android:label="@string/title_activity_edit_note"
             android:theme="@style/AppTheme" />
 
+        <activity
+            android:name=".NotesListActivity"
+            android:label="@string/title_activity_choose_notebook"
+            android:theme="@style/AppTheme" />
+
+
         <service android:name=".service.SyncService"/>
     </application>
 

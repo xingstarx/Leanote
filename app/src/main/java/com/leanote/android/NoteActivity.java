@@ -67,11 +67,14 @@ public class NoteActivity extends SingleFragmentActivity {
             return view;
         }
 
-        @OnClick({R.id.menu_edit})
+        @OnClick({R.id.menu_edit, R.id.menu_move})
         void OnClick(View view) {
             switch (view.getId()) {
                 case R.id.menu_edit:
                     EditNoteActivity.showEditNote(getContext(), mNote);
+                    break;
+                case R.id.menu_move:
+                    NotesListActivity.showNotesList(getContext(), mNote);
                     break;
             }
         }
