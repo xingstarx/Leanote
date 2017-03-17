@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,7 +13,11 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.leanote.android.base.SingleFragmentActivity;
+import com.leanote.android.database.AppDataBase;
 import com.leanote.android.model.Note;
+import com.leanote.android.model.Notebook;
+
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -37,6 +42,14 @@ public class NotesListActivity extends SingleFragmentActivity {
         context.startActivity(intent);
     }
 
+    @Override
+    public void onBackPressed() {
+        Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
+        if (fragment instanceof NotesListFragment && !((NotesListFragment) fragment).onBackPressed()) {
+            super.onBackPressed();
+        }
+    }
+
     public static class NotesListFragment extends Fragment {
 
         @BindView(R.id.recycler_view)
@@ -46,11 +59,14 @@ public class NotesListActivity extends SingleFragmentActivity {
         @BindView(R.id.select_note_book)
         TextView mSelectNoteBook;
         private Note mNote;
+        private List<Notebook> mNotebooks;
+        private NotebookAdapter mNotebookAdapter;
 
         @Override
         public void onCreate(@Nullable Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             mNote = (Note) getArguments().getSerializable(ARG_NOTE);
+            mNotebooks = AppDataBase.getRootNotebooks(AppDataBase.getAccountWithToken().userId);
         }
 
         @Nullable
@@ -59,6 +75,15 @@ public class NotesListActivity extends SingleFragmentActivity {
             View view = inflater.inflate(R.layout.fragment_notes_list, container, false);
             ButterKnife.bind(this, view);
             return view;
+        }
+
+        @Override
+        public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+            super.onViewCreated(view, savedInstanceState);
+            mNotebookAdapter = new NotebookAdapter();
+            mNotebookAdapter.setNotebooks(mNotebooks);
+            mRecyclerView.setAdapter(mNotebookAdapter);
+            mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         }
 
         public static NotesListFragment newInstance(Note note) {
@@ -78,6 +103,50 @@ public class NotesListActivity extends SingleFragmentActivity {
                     break;
             }
         }
+
+        public boolean onBackPressed() {
+
+            return false;
+        }
     }
 
+    static class NotebookAdapter extends RecyclerView.Adapter {
+
+        private List<Notebook> notebooks;
+
+        public void setNotebooks(List<Notebook> notebooks) {
+            this.notebooks = notebooks;
+        }
+
+        @Override
+        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.fragment_note_list_item, parent, false);
+            return new ViewHolder(view);
+        }
+
+        @Override
+        public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+            ViewHolder viewHolder = (ViewHolder) holder;
+            Notebook notebook = notebooks.get(position);
+            viewHolder.titleView.setText(notebook.title);
+            viewHolder.updateTimeView.setText(notebook.updateTime);
+        }
+
+        @Override
+        public int getItemCount() {
+            return notebooks.size();
+        }
+    }
+
+    static class ViewHolder extends RecyclerView.ViewHolder {
+        @BindView(R.id.title)
+        TextView titleView;
+        @BindView(R.id.update_time)
+        TextView updateTimeView;
+
+        public ViewHolder(View itemView) {
+            super(itemView);
+            ButterKnife.bind(this, itemView);
+        }
+    }
 }

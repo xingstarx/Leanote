@@ -7,4 +7,5 @@
     <color name="bg_logo">#165ea8</color>
     <color name="line_gray">#ececec</color>
     <color name="white">#fff</color>
+    <color name="divider">#FFAAAAAA</color>
 </resources>

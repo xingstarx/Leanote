@@ -212,17 +212,15 @@ public class AppDataBase {
         return SQLite.select(Method.ALL_PROPERTY, Method.max(Notebook_Table.usn)).from(Notebook.class).querySingle().usn;
     }
 
+    public static List<Notebook> getRootNotebooks(String userId) {
+        return SQLite.select()
+                .from(Notebook.class)
+                .where(Notebook_Table.userId.eq(userId))
+                .and(Notebook_Table.parentNotebookId.eq(""))
+                .and(Notebook_Table.isDeletedOnServer.eq(false))
+                .queryList();
+    }
 
-//
-//    public static List<Notebook> getRootNotebooks(String userId) {
-//        return SQLite.select()
-//                .from(Notebook.class)
-//                .where(Notebook_Table.userId.eq(userId))
-//                .and(Notebook_Table.parentNotebookId.eq(""))
-//                .and(Notebook_Table.isDeletedOnServer.eq(false))
-//                .queryList();
-//    }
-//
 //    public static List<Notebook> getChildNotebook(String notebookId, String userId) {
 //        return SQLite.select()
 //                .from(Notebook.class)
