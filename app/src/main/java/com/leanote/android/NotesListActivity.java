@@ -104,6 +104,8 @@ public class NotesListActivity extends SingleFragmentActivity {
         public void onClick(View view) {
             switch (view.getId()) {
                 case R.id.create_note_book:
+                    CreateNotebookFragment fragment = CreateNotebookFragment.newInstance();
+                    fragment.show(getChildFragmentManager(), CreateNotebookFragment.TAG);
                     break;
                 case R.id.select_note_book:
                     break;

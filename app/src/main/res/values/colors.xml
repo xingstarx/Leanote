@@ -10,4 +10,5 @@
     <color name="divider">#FFAAAAAA</color>
     <color name="text_blue">#FF4B7ABF</color>
     <color name="text_gray">#FF969696</color>
+    <color name="text_black">#151515</color>
 </resources>
