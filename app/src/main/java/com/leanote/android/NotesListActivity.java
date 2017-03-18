@@ -14,10 +14,13 @@ import android.widget.TextView;
 
 import com.leanote.android.base.SingleFragmentActivity;
 import com.leanote.android.database.AppDataBase;
+import com.leanote.android.model.Account;
 import com.leanote.android.model.Note;
 import com.leanote.android.model.Notebook;
+import com.leanote.android.utils.TimeUtils;
 
 import java.util.List;
+import java.util.Stack;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -61,12 +64,14 @@ public class NotesListActivity extends SingleFragmentActivity {
         private Note mNote;
         private List<Notebook> mNotebooks;
         private NotebookAdapter mNotebookAdapter;
+        private Account mCurrentAccount;
 
         @Override
         public void onCreate(@Nullable Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             mNote = (Note) getArguments().getSerializable(ARG_NOTE);
-            mNotebooks = AppDataBase.getRootNotebooks(AppDataBase.getAccountWithToken().userId);
+            mCurrentAccount = AppDataBase.getAccountWithToken();
+            mNotebooks = AppDataBase.getRootNotebooks(mCurrentAccount.userId);
         }
 
         @Nullable
@@ -82,6 +87,7 @@ public class NotesListActivity extends SingleFragmentActivity {
             super.onViewCreated(view, savedInstanceState);
             mNotebookAdapter = new NotebookAdapter();
             mNotebookAdapter.setNotebooks(mNotebooks);
+            mNotebookAdapter.setAccount(mCurrentAccount);
             mRecyclerView.setAdapter(mNotebookAdapter);
             mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         }
@@ -105,7 +111,10 @@ public class NotesListActivity extends SingleFragmentActivity {
         }
 
         public boolean onBackPressed() {
-
+            if (!mNotebookAdapter.isRoot()) {
+                mNotebookAdapter.onBackPressed();
+                return true;
+            }
             return false;
         }
     }
@@ -113,9 +122,20 @@ public class NotesListActivity extends SingleFragmentActivity {
     static class NotebookAdapter extends RecyclerView.Adapter {
 
         private List<Notebook> notebooks;
+        private Account account;
+        private Stack<List<Notebook>> listStack = new Stack<>();
+
+        public boolean isRoot() {
+            return listStack.size() == 0;
+        }
+
 
         public void setNotebooks(List<Notebook> notebooks) {
             this.notebooks = notebooks;
+        }
+
+        public void setAccount(Account account) {
+            this.account = account;
         }
 
         @Override
@@ -127,14 +147,29 @@ public class NotesListActivity extends SingleFragmentActivity {
         @Override
         public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
             ViewHolder viewHolder = (ViewHolder) holder;
-            Notebook notebook = notebooks.get(position);
+            final Notebook notebook = notebooks.get(position);
             viewHolder.titleView.setText(notebook.title);
-            viewHolder.updateTimeView.setText(notebook.updateTime);
+            viewHolder.updateTimeView.setText(TimeUtils.toYearFormat(TimeUtils.toTimestamp(notebook.updateTime)));
+            viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    List<Notebook> childNotebooks = AppDataBase.getChildNotebook(notebook.notebookId, account.userId);
+                    listStack.push(notebooks);
+                    setNotebooks(childNotebooks);
+                    notifyDataSetChanged();
+                }
+            });
         }
 
         @Override
         public int getItemCount() {
             return notebooks.size();
+        }
+
+        public void onBackPressed() {
+            List<Notebook> notebooks = listStack.pop();
+            setNotebooks(notebooks);
+            notifyDataSetChanged();
         }
     }
 

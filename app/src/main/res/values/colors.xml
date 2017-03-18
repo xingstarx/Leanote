@@ -8,4 +8,6 @@
     <color name="line_gray">#ececec</color>
     <color name="white">#fff</color>
     <color name="divider">#FFAAAAAA</color>
+    <color name="text_blue">#FF4B7ABF</color>
+    <color name="text_gray">#FF969696</color>
 </resources>

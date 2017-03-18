@@ -221,15 +221,15 @@ public class AppDataBase {
                 .queryList();
     }
 
-//    public static List<Notebook> getChildNotebook(String notebookId, String userId) {
-//        return SQLite.select()
-//                .from(Notebook.class)
-//                .where(Notebook_Table.userId.eq(userId))
-//                .and(Notebook_Table.parentNotebookId.eq(notebookId))
-//                .and(Notebook_Table.isDeletedOnServer.eq(false))
-//                .queryList();
-//    }
-//
+    public static List<Notebook> getChildNotebook(String notebookId, String userId) {
+        return SQLite.select()
+                .from(Notebook.class)
+                .where(Notebook_Table.userId.eq(userId))
+                .and(Notebook_Table.parentNotebookId.eq(notebookId))
+                .and(Notebook_Table.isDeletedOnServer.eq(false))
+                .queryList();
+    }
+
 //    public static List<NoteFile> getAllRelatedFile(long noteLocalId) {
 //        return SQLite.select()
 //                .from(NoteFile.class)

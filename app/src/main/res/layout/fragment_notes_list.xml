@@ -11,6 +11,11 @@
         android:layout_height="0dp"
         android:layout_weight="1" />
 
+    <View
+        android:layout_width="match_parent"
+        android:background="@color/divider"
+        android:layout_height="1px"/>
+
     <FrameLayout
         android:id="@+id/bottom_panel"
         android:layout_width="match_parent"
@@ -19,21 +24,23 @@
 
         <TextView
             android:id="@+id/create_note_book"
-            android:layout_width="80dp"
-            android:layout_height="30dp"
+            android:layout_width="100dp"
+            android:layout_height="36dp"
             android:layout_gravity="center_vertical|left"
             android:layout_marginLeft="20dp"
-            android:background="@color/colorAccent"
+            android:background="@drawable/bg_radius_white"
+            android:textColor="@color/text_blue"
             android:gravity="center"
             android:text="新建文件夹" />
 
         <TextView
             android:id="@+id/select_note_book"
-            android:layout_width="80dp"
-            android:layout_height="30dp"
+            android:layout_width="100dp"
+            android:layout_height="36dp"
             android:layout_gravity="center_vertical|right"
             android:layout_marginRight="20dp"
-            android:background="@color/colorAccent"
+            android:background="@drawable/bg_radius_white"
+            android:textColor="@color/text_blue"
             android:gravity="center"
             android:text="选择此处" />
 
