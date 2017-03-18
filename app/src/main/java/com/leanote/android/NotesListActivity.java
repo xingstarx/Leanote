@@ -104,7 +104,13 @@ public class NotesListActivity extends SingleFragmentActivity {
         public void onClick(View view) {
             switch (view.getId()) {
                 case R.id.create_note_book:
-                    CreateNotebookFragment fragment = CreateNotebookFragment.newInstance();
+                    CreateNotebookFragment fragment = CreateNotebookFragment.newInstance(mNotebookAdapter.getParentNotebookId());
+                    fragment.setOnAddNotebookSuccessListener(new CreateNotebookFragment.OnAddNotebookSuccessListener() {
+                        @Override
+                        public void onSuccess(Notebook notebook) {
+                            mNotebookAdapter.addNotebook(notebook);
+                        }
+                    });
                     fragment.show(getChildFragmentManager(), CreateNotebookFragment.TAG);
                     break;
                 case R.id.select_note_book:
@@ -126,9 +132,19 @@ public class NotesListActivity extends SingleFragmentActivity {
         private List<Notebook> notebooks;
         private Account account;
         private Stack<List<Notebook>> listStack = new Stack<>();
+        private Stack<Notebook> stack = new Stack<>();
 
         public boolean isRoot() {
             return listStack.size() == 0;
+        }
+
+        public void addNotebook(Notebook notebook) {
+            notebooks.add(0, notebook);
+            notifyDataSetChanged();
+        }
+
+        public String getParentNotebookId() {
+            return stack.size() == 0 ? null : stack.peek().notebookId;
         }
 
 
@@ -156,6 +172,7 @@ public class NotesListActivity extends SingleFragmentActivity {
                 @Override
                 public void onClick(View v) {
                     List<Notebook> childNotebooks = AppDataBase.getChildNotebook(notebook.notebookId, account.userId);
+                    stack.push(notebook);
                     listStack.push(notebooks);
                     setNotebooks(childNotebooks);
                     notifyDataSetChanged();
@@ -169,6 +186,7 @@ public class NotesListActivity extends SingleFragmentActivity {
         }
 
         public void onBackPressed() {
+            stack.pop();
             List<Notebook> notebooks = listStack.pop();
             setNotebooks(notebooks);
             notifyDataSetChanged();

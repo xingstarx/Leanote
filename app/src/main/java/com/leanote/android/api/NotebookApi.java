@@ -24,5 +24,5 @@ public interface NotebookApi {
     Call<BaseModel<List<Notebook>>> getCallNotebooks();
 
     @POST("notebook/addNotebook")
-    Call<Notebook> addNotebook(@Query("title") String title, @Query("parentNotebookId") String parentId);
+    Observable<BaseModel<Notebook>> addNotebook(@Query("title") String title, @Query("parentNotebookId") String parentId);
 }
