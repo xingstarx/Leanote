@@ -162,6 +162,27 @@ public class AppDataBase {
                 .and(Note_Table.isTrash.eq(false))
                 .queryList();
     }
+
+    public static List<Note> getChildNote(String notebookId, String userId) {
+        return SQLite.select()
+                .from(Note.class)
+                .where(Note_Table.userId.eq(userId))
+                .and(Note_Table.notebookId.eq(notebookId))
+                .and(Note_Table.isTrash.eq(false))
+                .and(Note_Table.isDeleted.eq(false))
+                .and(Note_Table.isTrash.eq(false))
+                .queryList();
+    }
+
+    public static Note getNoteById(String noteId) {
+        return SQLite.select()
+                .from(Note.class)
+                .where(Note_Table.noteId.eq(noteId))
+                .and(Note_Table.isTrash.eq(false))
+                .and(Note_Table.isDeleted.eq(false))
+                .and(Note_Table.isTrash.eq(false))
+                .querySingle();
+    }
 //
 //    public static Notebook getNotebookByServerId(String serverId) {
 //        return SQLite.select()

@@ -25,4 +25,9 @@ public interface NotebookApi {
 
     @POST("notebook/addNotebook")
     Observable<BaseModel<Notebook>> addNotebook(@Query("title") String title, @Query("parentNotebookId") String parentId);
+
+    @POST("notebook/updateNotebook")
+    Observable<BaseModel<Notebook>> updateNotebook(@Query("notebookId") String notebookId, @Query("title") String title,
+                                  @Query("parentNotebookId") String parentId, @Query("seq") int seq, @Query("usn") int usn);
+
 }

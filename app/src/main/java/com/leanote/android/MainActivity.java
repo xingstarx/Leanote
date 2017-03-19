@@ -26,8 +26,8 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.view_pager)
     ViewPager mViewPager;
     private TabBarView mTabBarView;
-    private String[] mTabTitles = new String[]{"最新", "全部"};
-    private int[] mTabIcons = new int[]{R.drawable.ic_action_last, R.drawable.ic_action_last};
+    private String[] mTabTitles = new String[]{"全部", "最新"};
+    private int[] mTabIcons = new int[]{R.drawable.ic_menu_all_note, R.drawable.ic_doc_selected};
     private MainAdapter mMainAdapter;
 
     @Override
@@ -81,9 +81,9 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public Fragment getItem(int position) {
             if (position == 0) {
-                return HeadlineFragment.newInstance();
-            } else {
                 return BrowserFragment.newInstance();
+            } else {
+                return HeadlineFragment.newInstance();
             }
         }
 
