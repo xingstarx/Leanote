@@ -16,6 +16,7 @@ import android.widget.TextView;
 
 import com.jcodecraeer.xrecyclerview.ProgressStyle;
 import com.jcodecraeer.xrecyclerview.XRecyclerView;
+import com.leanote.android.base.BaseFragment;
 import com.leanote.android.database.AppDataBase;
 import com.leanote.android.model.Note;
 import com.leanote.android.rxbus.RxBus;
@@ -33,7 +34,7 @@ import rx.functions.Action1;
  * Created by xiongxingxing on 17/1/10.
  */
 
-public class HeadlineFragment extends Fragment {
+public class HeadlineFragment extends BaseFragment {
     public static final String TAG = "HeadlineFragment";
     @BindView(R.id.recycler_view)
     XRecyclerView mRecyclerView;

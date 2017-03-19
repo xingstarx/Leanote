@@ -12,12 +12,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.leanote.android.api.ApiProvider;
+import com.leanote.android.api.NoteApi;
+import com.leanote.android.api.NotebookApi;
+import com.leanote.android.base.BaseFragment;
 import com.leanote.android.base.SingleFragmentActivity;
 import com.leanote.android.database.AppDataBase;
 import com.leanote.android.model.Account;
 import com.leanote.android.model.Note;
 import com.leanote.android.model.Notebook;
 import com.leanote.android.utils.TimeUtils;
+import com.leanote.android.utils.ToastUtils;
 
 import java.util.List;
 import java.util.Stack;
@@ -48,12 +53,12 @@ public class NotesListActivity extends SingleFragmentActivity {
     @Override
     public void onBackPressed() {
         Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
-        if (fragment instanceof NotesListFragment && !((NotesListFragment) fragment).onBackPressed()) {
+        if (fragment instanceof BaseFragment && !((BaseFragment) fragment).onBackPressed()) {
             super.onBackPressed();
         }
     }
 
-    public static class NotesListFragment extends Fragment {
+    public static class NotesListFragment extends BaseFragment {
 
         @BindView(R.id.recycler_view)
         RecyclerView mRecyclerView;
@@ -65,6 +70,7 @@ public class NotesListActivity extends SingleFragmentActivity {
         private List<Notebook> mNotebooks;
         private NotebookAdapter mNotebookAdapter;
         private Account mCurrentAccount;
+        private NoteApi mNoteApi;
 
         @Override
         public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -72,6 +78,7 @@ public class NotesListActivity extends SingleFragmentActivity {
             mNote = (Note) getArguments().getSerializable(ARG_NOTE);
             mCurrentAccount = AppDataBase.getAccountWithToken();
             mNotebooks = AppDataBase.getRootNotebooks(mCurrentAccount.userId);
+            mNoteApi = ApiProvider.getInstance().getNoteApi();
         }
 
         @Nullable
@@ -114,6 +121,11 @@ public class NotesListActivity extends SingleFragmentActivity {
                     fragment.show(getChildFragmentManager(), CreateNotebookFragment.TAG);
                     break;
                 case R.id.select_note_book:
+                    if (mNotebookAdapter.isRoot()) {
+                        ToastUtils.show(getContext(), "不能把笔记移动到根节点位置");
+                    } else {
+                        // TODO: 17/3/19 更新note所在的笔记本
+                    }
                     break;
             }
         }

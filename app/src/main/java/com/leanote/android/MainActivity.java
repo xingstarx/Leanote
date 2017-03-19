@@ -11,7 +11,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-
+import com.leanote.android.base.BaseFragment;
 import com.leanote.android.database.AppDataBase;
 import com.leanote.android.service.SyncService;
 import com.leanote.android.weidget.TabBarView;
@@ -29,6 +29,10 @@ public class MainActivity extends AppCompatActivity {
     private String[] mTabTitles = new String[]{"全部", "最新"};
     private int[] mTabIcons = new int[]{R.drawable.ic_menu_all_note, R.drawable.ic_doc_selected};
     private MainAdapter mMainAdapter;
+    private BrowserFragment browserFragment;
+    private HeadlineFragment headlineFragment;
+    private int mCurrentItem;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,9 +62,17 @@ public class MainActivity extends AppCompatActivity {
         mTabBarView.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
-
+                mCurrentItem = position;
             }
         });
+    }
+
+    @Override
+    public void onBackPressed() {
+        BaseFragment fragment = (BaseFragment) mMainAdapter.getItem(mCurrentItem);
+        if (!fragment.onBackPressed()) {
+            super.onBackPressed();
+        }
     }
 
     public static void show(Context context) {
@@ -81,9 +93,15 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public Fragment getItem(int position) {
             if (position == 0) {
-                return BrowserFragment.newInstance();
+                if (browserFragment == null) {
+                    browserFragment = BrowserFragment.newInstance();
+                }
+                return browserFragment;
             } else {
-                return HeadlineFragment.newInstance();
+                if (headlineFragment == null) {
+                    headlineFragment = HeadlineFragment.newInstance();
+                }
+                return headlineFragment;
             }
         }
 

@@ -1,8 +1,8 @@
 package com.leanote.android;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
@@ -14,6 +14,7 @@ import android.widget.TextView;
 import com.jcodecraeer.xrecyclerview.XRecyclerView;
 import com.leanote.android.api.ApiProvider;
 import com.leanote.android.api.NoteApi;
+import com.leanote.android.base.BaseFragment;
 import com.leanote.android.database.AppDataBase;
 import com.leanote.android.model.Account;
 import com.leanote.android.model.FullTree;
@@ -37,7 +38,7 @@ import rx.schedulers.Schedulers;
  * Created by xiongxingxing on 17/1/10.
  */
 
-public class BrowserFragment extends Fragment {
+public class BrowserFragment extends BaseFragment {
 
     @BindView(R.id.recycler_view)
     XRecyclerView mRecyclerView;
@@ -98,6 +99,15 @@ public class BrowserFragment extends Fragment {
                 });
     }
 
+    @Override
+    public boolean onBackPressed() {
+        if (!mEntryAdapter.isRootFolder()) {
+            mEntryAdapter.onBackPressed();
+            return true;
+        }
+        return super.onBackPressed();
+    }
+
     static class EntryAdapter extends RecyclerView.Adapter {
         FullTree.Folder folder;
         Stack<FullTree.Folder> stack = new Stack<>();
@@ -106,6 +116,10 @@ public class BrowserFragment extends Fragment {
 
         public void setFolder(FullTree.Folder folder) {
             this.folder = folder;
+        }
+
+        public boolean isRootFolder() {
+            return stack.size() == 0;
         }
 
         @Override
@@ -120,7 +134,7 @@ public class BrowserFragment extends Fragment {
         }
 
         @Override
-        public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
+        public void onBindViewHolder(final RecyclerView.ViewHolder holder, @SuppressLint("RecyclerView") final int position) {
             if (getItemViewType(position) == VIEW_TYPE_FOLDER) {
                 FolderViewHolder folderViewHolder = (FolderViewHolder) holder;
                 final TreeEntry entry = folder.folders.get(position).entry;
@@ -130,7 +144,7 @@ public class BrowserFragment extends Fragment {
                     @Override
                     public void onClick(View v) {
                         stack.push(folder);
-                        setFolder(folder.folders.get(holder.getAdapterPosition()));
+                        setFolder(folder.folders.get(position));
                         notifyDataSetChanged();
                     }
                 });
@@ -165,6 +179,12 @@ public class BrowserFragment extends Fragment {
         @Override
         public int getItemCount() {
             return folder.folders.size() + folder.files.size();
+        }
+
+        public void onBackPressed() {
+            FullTree.Folder parentFolder = stack.pop();
+            setFolder(parentFolder);
+            notifyDataSetChanged();
         }
 
         static class FolderViewHolder extends RecyclerView.ViewHolder {
