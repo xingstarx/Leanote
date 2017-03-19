@@ -2,13 +2,9 @@ package com.leanote.android;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +14,7 @@ import com.jcodecraeer.xrecyclerview.ProgressStyle;
 import com.jcodecraeer.xrecyclerview.XRecyclerView;
 import com.leanote.android.base.BaseFragment;
 import com.leanote.android.database.AppDataBase;
+import com.leanote.android.model.Account;
 import com.leanote.android.model.Note;
 import com.leanote.android.rxbus.RxBus;
 import com.leanote.android.rxbus.SyncEvent;
@@ -38,13 +35,22 @@ public class HeadlineFragment extends BaseFragment {
     public static final String TAG = "HeadlineFragment";
     @BindView(R.id.recycler_view)
     XRecyclerView mRecyclerView;
+    @BindView(android.R.id.empty)
+    View mEmptyView;
     HeadLineAdapter mHeadLineAdapter;
+    private Account mCurrentAccount;
 
     public static HeadlineFragment newInstance() {
         Bundle args = new Bundle();
         HeadlineFragment fragment = new HeadlineFragment();
         fragment.setArguments(args);
         return fragment;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mCurrentAccount = AppDataBase.getAccountWithToken();
     }
 
     @Nullable
@@ -57,22 +63,15 @@ public class HeadlineFragment extends BaseFragment {
     }
 
     private void initView() {
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
-        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        mRecyclerView.setLayoutManager(layoutManager);
-        DividerItemDecoration decoration = new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL);
-        decoration.setDrawable(ContextCompat.getDrawable(getContext(), R.drawable.line_divider));
-        mRecyclerView.addItemDecoration(decoration);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         mRecyclerView.setRefreshProgressStyle(ProgressStyle.BallSpinFadeLoader);
         mRecyclerView.setLoadingMoreProgressStyle(ProgressStyle.BallRotate);
         mRecyclerView.setArrowImageView(R.drawable.ic_font_downgrey);
-
+        mRecyclerView.setEmptyView(mEmptyView);
         mRecyclerView.setLoadingListener(new XRecyclerView.LoadingListener() {
             @Override
             public void onRefresh() {
-                mHeadLineAdapter.setNotes(AppDataBase.getAllNotes(AppDataBase.getAccountWithToken().getUserId()));
-                mHeadLineAdapter.notifyDataSetChanged();
-                mRecyclerView.refreshComplete();
+                loadData(null);
             }
 
             @Override
@@ -82,13 +81,12 @@ public class HeadlineFragment extends BaseFragment {
 
         RxBus.getInstance().toObservable().subscribe(new Action1<Object>() {
             @Override
-            public void call(Object event) {
+            public void call(final Object event) {
                 if (event instanceof SyncEvent) {
-                    Log.e(TAG, "event is SyncEvent!");
                     mRecyclerView.post(new Runnable() {
                         @Override
                         public void run() {
-                            mRecyclerView.refresh();
+                            loadData(event);
                         }
                     });
                 }
@@ -96,6 +94,14 @@ public class HeadlineFragment extends BaseFragment {
         });
         mHeadLineAdapter = new HeadLineAdapter(new ArrayList<Note>());
         mRecyclerView.setAdapter(mHeadLineAdapter);
+    }
+
+    private void loadData(final Object event) {
+        if (event == null) {
+            mRecyclerView.refreshComplete();
+        }
+        mHeadLineAdapter.setNotes(AppDataBase.getAllNotes(mCurrentAccount.getUserId()));
+        mHeadLineAdapter.notifyDataSetChanged();
     }
 
 

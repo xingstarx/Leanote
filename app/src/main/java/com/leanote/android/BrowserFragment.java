@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.jcodecraeer.xrecyclerview.ProgressStyle;
 import com.jcodecraeer.xrecyclerview.XRecyclerView;
 import com.leanote.android.api.ApiProvider;
 import com.leanote.android.api.NoteApi;
@@ -21,6 +22,8 @@ import com.leanote.android.model.FullTree;
 import com.leanote.android.model.Note;
 import com.leanote.android.model.Notebook;
 import com.leanote.android.model.TreeEntry;
+import com.leanote.android.rxbus.RxBus;
+import com.leanote.android.rxbus.SyncEvent;
 import com.leanote.android.utils.TimeUtils;
 
 import java.util.List;
@@ -40,8 +43,11 @@ import rx.schedulers.Schedulers;
 
 public class BrowserFragment extends BaseFragment {
 
+    private static final String TAG = "BrowserFragment";
     @BindView(R.id.recycler_view)
     XRecyclerView mRecyclerView;
+    @BindView(android.R.id.empty)
+    View mEmptyView;
     private List<Notebook> mNotebooks;
     private Account mCurrentAccount;
     private NoteApi mNoteApi;
@@ -75,6 +81,34 @@ public class BrowserFragment extends BaseFragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        mRecyclerView.setRefreshProgressStyle(ProgressStyle.BallSpinFadeLoader);
+        mRecyclerView.setLoadingMoreProgressStyle(ProgressStyle.BallRotate);
+        mRecyclerView.setArrowImageView(R.drawable.ic_font_downgrey);
+        mRecyclerView.setEmptyView(mEmptyView);
+        mRecyclerView.setLoadingListener(new XRecyclerView.LoadingListener() {
+            @Override
+            public void onRefresh() {
+                loadEntryData(null);
+            }
+
+            @Override
+            public void onLoadMore() {
+            }
+        });
+        RxBus.getInstance().toObservable().subscribe(new Action1<Object>() {
+            @Override
+            public void call(Object event) {
+                if (event instanceof SyncEvent) {
+                    loadEntryData(event);
+                }
+            }
+        });
+        mEntryAdapter = new EntryAdapter();
+        mRecyclerView.setAdapter(mEntryAdapter);
+    }
+
+    private void loadEntryData(final Object event) {
         Observable.create(new Observable.OnSubscribe<FullTree.Folder>() {
             @Override
             public void call(Subscriber<? super FullTree.Folder> subscriber) {
@@ -86,10 +120,11 @@ public class BrowserFragment extends BaseFragment {
                 .subscribe(new Action1<FullTree.Folder>() {
                     @Override
                     public void call(FullTree.Folder folder) {
-                        mEntryAdapter = new EntryAdapter();
+                        if (event == null) {
+                            mRecyclerView.refreshComplete();
+                        }
                         mEntryAdapter.setFolder(folder);
-                        mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-                        mRecyclerView.setAdapter(mEntryAdapter);
+                        mEntryAdapter.notifyDataSetChanged();
                     }
                 }, new Action1<Throwable>() {
                     @Override
@@ -109,7 +144,7 @@ public class BrowserFragment extends BaseFragment {
     }
 
     static class EntryAdapter extends RecyclerView.Adapter {
-        FullTree.Folder folder;
+        FullTree.Folder folder = new FullTree.Folder();
         Stack<FullTree.Folder> stack = new Stack<>();
         public static final int VIEW_TYPE_FOLDER = 0;
         public static final int VIEW_TYPE_ENTRY = 1;

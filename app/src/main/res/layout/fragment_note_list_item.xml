@@ -7,7 +7,7 @@
 
     <TextView
         android:drawableLeft="@drawable/ic_doc_folder"
-        android:drawablePadding="4dp"
+        android:drawablePadding="6dp"
         android:id="@+id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
