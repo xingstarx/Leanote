@@ -1,7 +1,10 @@
 package com.leanote.android;
 
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.TextViewCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
@@ -128,11 +131,16 @@ public class HeadlineFragment extends BaseFragment {
             final ViewHolder viewHolder = (ViewHolder) holder;
             final Note note = notes.get(position);
             viewHolder.title.setText(note.title);
+            Drawable drawable;
             if (note.isMarkDown) {
                 viewHolder.content.setText(note.noteAbstract);
+                drawable = ContextCompat.getDrawable(viewHolder.title.getContext(), R.drawable.ic_doc_markdown);
             } else {
                 viewHolder.content.setText(Html.fromHtml(note.noteAbstract).toString());
+                drawable = ContextCompat.getDrawable(viewHolder.title.getContext(), R.drawable.ic_doc_note);
             }
+            drawable.setBounds(0, 0, drawable.getMinimumWidth(), drawable.getMinimumHeight());
+            TextViewCompat.setCompoundDrawablesRelative(viewHolder.title, drawable, null, null, null);
             viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

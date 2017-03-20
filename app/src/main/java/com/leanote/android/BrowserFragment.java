@@ -1,8 +1,11 @@
 package com.leanote.android;
 
 import android.annotation.SuppressLint;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.TextViewCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
@@ -187,11 +190,16 @@ public class BrowserFragment extends BaseFragment {
                 final EntryViewHolder entryViewHolder = (EntryViewHolder) holder;
                 final TreeEntry entry = folder.files.get(position - folder.folders.size()).entry;
                 entryViewHolder.title.setText(entry.title);
+                Drawable drawable;
                 if (entry.isMarkDown) {
                     entryViewHolder.content.setText(entry.noteAbstract);
+                    drawable = ContextCompat.getDrawable(entryViewHolder.title.getContext(), R.drawable.ic_doc_markdown);
                 } else {
                     entryViewHolder.content.setText(Html.fromHtml(entry.noteAbstract).toString());
+                    drawable = ContextCompat.getDrawable(entryViewHolder.title.getContext(), R.drawable.ic_doc_note);
                 }
+                drawable.setBounds(0, 0, drawable.getMinimumWidth(), drawable.getMinimumHeight());
+                TextViewCompat.setCompoundDrawablesRelative(entryViewHolder.title, drawable, null, null, null);
                 entryViewHolder.updateTimeView.setText(TimeUtils.toYearFormat(TimeUtils.toTimestamp(entry.updateTime)));
                 entryViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
