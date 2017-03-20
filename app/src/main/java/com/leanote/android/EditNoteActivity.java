@@ -12,6 +12,7 @@ import android.webkit.WebView;
 
 import com.leanote.android.base.SingleFragmentActivity;
 import com.leanote.android.editor.Editor;
+import com.leanote.android.editor.MarkdownEditor;
 import com.leanote.android.editor.RichTextEditor;
 import com.leanote.android.model.Note;
 import com.leanote.android.utils.ContextUtils;
@@ -52,7 +53,7 @@ public class EditNoteActivity extends SingleFragmentActivity {
             super.onCreate(savedInstanceState);
             mNote = (Note) getArguments().getSerializable(ARG_NOTE);
             if (mNote.isMarkDown) {
-
+                mEditor = new MarkdownEditor(this);
             } else {
                 mEditor = new RichTextEditor(this);
             }

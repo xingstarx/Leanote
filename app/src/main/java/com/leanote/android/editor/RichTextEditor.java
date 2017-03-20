@@ -16,7 +16,7 @@ import static android.view.View.SCROLLBARS_OUTSIDE_OVERLAY;
 
 public class RichTextEditor extends Editor implements TinnyMceCallback.TinnyMceListener {
 
-    private static final String TAG = "RichTextEditor:";
+    private static final String TAG = "RichTextEditor";
     private static final String JS_CALLBACK_HANDLER = "nativeCallbackHandler";
     private WebView mWebView;
 
