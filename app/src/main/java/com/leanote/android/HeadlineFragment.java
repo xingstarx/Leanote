@@ -71,6 +71,7 @@ public class HeadlineFragment extends BaseFragment {
         mRecyclerView.setLoadingMoreProgressStyle(ProgressStyle.BallRotate);
         mRecyclerView.setArrowImageView(R.drawable.ic_font_downgrey);
         mRecyclerView.setEmptyView(mEmptyView);
+        mRecyclerView.setLoadingMoreEnabled(false);
         mRecyclerView.setLoadingListener(new XRecyclerView.LoadingListener() {
             @Override
             public void onRefresh() {
