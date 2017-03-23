@@ -21,4 +21,8 @@ public class BaseModel<T> {
                 ", data=" + data +
                 '}';
     }
+
+    public boolean isError() {
+        return data == null && !ok;
+    }
 }

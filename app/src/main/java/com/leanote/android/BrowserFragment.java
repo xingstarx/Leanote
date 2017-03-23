@@ -69,7 +69,6 @@ public class BrowserFragment extends BaseFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mCurrentAccount = AppDataBase.getAccountWithToken();
-        mNotebooks = AppDataBase.getRootNotebooks(mCurrentAccount.userId);
         mNoteApi = ApiProvider.getInstance().getNoteApi();
     }
 
@@ -116,6 +115,9 @@ public class BrowserFragment extends BaseFragment {
         Observable.create(new Observable.OnSubscribe<FullTree.Folder>() {
             @Override
             public void call(Subscriber<? super FullTree.Folder> subscriber) {
+                if (mNotebooks == null) {
+                    mNotebooks = AppDataBase.getRootNotebooks(mCurrentAccount.userId);
+                }
                 mRootFolder = mRootFolder.initFullTree(mNotebooks, mCurrentAccount.userId);
                 subscriber.onNext(mRootFolder);
                 subscriber.onCompleted();

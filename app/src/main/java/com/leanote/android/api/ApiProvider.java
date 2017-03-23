@@ -1,6 +1,7 @@
 package com.leanote.android.api;
 
 import com.facebook.stetho.okhttp3.StethoInterceptor;
+import com.leanote.android.BuildConfig;
 import com.leanote.android.api.convert.LeaResponseConverterFactory;
 import com.leanote.android.database.AppDataBase;
 import com.leanote.android.model.Account;
@@ -37,7 +38,11 @@ public class ApiProvider {
 
     public void init(String host) {
         HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
-        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+        if (BuildConfig.DEBUG) {
+            interceptor.setLevel(HttpLoggingInterceptor.Level.BASIC);
+        } else {
+            interceptor.setLevel(HttpLoggingInterceptor.Level.BASIC);
+        }
         OkHttpClient client = new OkHttpClient.Builder()
                 .addNetworkInterceptor(new Interceptor() {
                     @Override

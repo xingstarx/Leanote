@@ -15,7 +15,7 @@ import rx.Observable;
 public interface NotebookApi {
 
     @GET("notebook/getSyncNotebooks")
-    Call<List<Notebook>> getSyncNotebooks(@Query("afterUsn") int afterUsn, @Query("maxEntry") int maxEntry);
+    Call<BaseModel<List<Notebook>>> getSyncNotebooks(@Query("afterUsn") int afterUsn, @Query("maxEntry") int maxEntry);
 
     @GET("notebook/getNotebooks")
     Observable<BaseModel<List<Notebook>>> getNotebooks();

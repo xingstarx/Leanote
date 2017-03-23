@@ -60,7 +60,6 @@ public class Note extends BaseModel implements Serializable {
     @Column(name = "id")
     @PrimaryKey(autoincrement = true)
     public Long id;
-    public Long localNotebookId;
     @Column(name = "desc")
     public String desc = "";
     @Column(name = "noteAbstract")
@@ -81,7 +80,6 @@ public class Note extends BaseModel implements Serializable {
     public String publicTime;
     @Column(name = "tags")
     public String tags = "";
-    public boolean uploadSucc = true;
 
     public List<String> getTagData() {
         return tagData;

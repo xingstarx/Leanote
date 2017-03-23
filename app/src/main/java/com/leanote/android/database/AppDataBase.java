@@ -116,20 +116,20 @@ public class AppDataBase {
 //                .execute();
 //    }
 //
-//    public static Note getNoteByServerId(String serverId) {
-//        return SQLite.select()
-//                .from(Note.class)
-//                .where(Note_Table.noteId.eq(serverId))
-//                .querySingle();
-//    }
-//
-//    public static Note getNoteByLocalId(long localId) {
-//        return SQLite.select()
-//                .from(Note.class)
-//                .where(Note_Table.id.eq(localId))
-//                .querySingle();
-//    }
-//
+    public static Note getNoteByServerId(String serverId) {
+        return SQLite.select()
+                .from(Note.class)
+                .where(Note_Table.noteId.eq(serverId))
+                .querySingle();
+    }
+
+    public static Note getNoteByLocalId(long localId) {
+        return SQLite.select()
+                .from(Note.class)
+                .where(Note_Table.id.eq(localId))
+                .querySingle();
+    }
+
 //    public static List<Note> getNotesFromNotebook(String userId, long localNotebookId) {
 //        Notebook notebook = getNotebookByLocalId(localNotebookId);
 //        if (notebook == null) {
@@ -183,21 +183,21 @@ public class AppDataBase {
                 .and(Note_Table.isTrash.eq(false))
                 .querySingle();
     }
-//
-//    public static Notebook getNotebookByServerId(String serverId) {
-//        return SQLite.select()
-//                .from(Notebook.class)
-//                .where(Notebook_Table.notebookId.eq(serverId))
-//                .querySingle();
-//    }
-//
-//    public static Notebook getNotebookByLocalId(long localId) {
-//        return SQLite.select()
-//                .from(Notebook.class)
-//                .where(Notebook_Table.id.eq(localId))
-//                .querySingle();
-//    }
-//
+
+    public static Notebook getNotebookByServerId(String serverId) {
+        return SQLite.select()
+                .from(Notebook.class)
+                .where(Notebook_Table.notebookId.eq(serverId))
+                .querySingle();
+    }
+
+    public static Notebook getNotebookByLocalId(long localId) {
+        return SQLite.select()
+                .from(Notebook.class)
+                .where(Notebook_Table.id.eq(localId))
+                .querySingle();
+    }
+
 //    public static Notebook getRecentNoteBook(String userId) {
 //        List<Note> recentNotes = SQLite.select()
 //                .from(Note.class)

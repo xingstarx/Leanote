@@ -9,7 +9,9 @@ import android.os.HandlerThread;
 import android.os.IBinder;
 import android.os.Message;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
+import com.apkfuns.logutils.LogUtils;
 import com.badoo.mobile.util.WeakHandler;
 import com.leanote.android.api.ApiProvider;
 import com.leanote.android.api.NoteApi;
@@ -24,6 +26,7 @@ import com.leanote.android.model.Notebook;
 import com.leanote.android.model.SyncState;
 import com.leanote.android.rxbus.RxBus;
 import com.leanote.android.rxbus.SyncEvent;
+import com.leanote.android.utils.NetWorkUtils;
 import com.leanote.android.utils.StringUtils;
 import com.raizlabs.android.dbflow.config.FlowManager;
 import com.raizlabs.android.dbflow.structure.database.DatabaseWrapper;
@@ -43,11 +46,13 @@ import java.util.Locale;
 public class SyncService extends Service {
 
     public static final String TAG = "SyncService";
+    private static final int MAX_ENTRY = 20;
     private HandlerThread mHandlerThread;
     private WeakHandler mWeakHandler;
-    public static final int TYPE_FETCH_ALL = 101;
+    public static final int TYPE_FETCH_NOTE = 101;
     public static final String ARG_SYNC_TYPE = "sync_type";
-    public static final int MSG_FETCH_ALL = 1;
+    private static final String CONFLICT_SUFFIX = "--conflict";
+    public static final int MSG_FETCH_NOTE = 1;
     private NotebookApi mNotebookApi;
     private NoteApi mNoteApi;
     private UserApi mUserApi;
@@ -79,8 +84,8 @@ public class SyncService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         int type = intent.getIntExtra(ARG_SYNC_TYPE, -1);
         switch (type) {
-            case TYPE_FETCH_ALL:
-                mWeakHandler.sendEmptyMessage(MSG_FETCH_ALL);
+            case TYPE_FETCH_NOTE:
+                mWeakHandler.sendEmptyMessage(MSG_FETCH_NOTE);
                 break;
             default:
                 break;
@@ -88,81 +93,185 @@ public class SyncService extends Service {
         return START_NOT_STICKY;
     }
 
-    private void handleMessage(Message msg) {
+    private synchronized void handleMessage(Message msg) {
         switch (msg.what) {
-            case MSG_FETCH_ALL:
-                fetchAll();
+            case MSG_FETCH_NOTE:
+                fetchData();
                 break;
-
         }
     }
 
-    public static void startSyncAll(Context context) {
+    public static void startSyncNote(Context context) {
         Intent intent = new Intent(context, SyncService.class);
-        intent.putExtra(ARG_SYNC_TYPE, TYPE_FETCH_ALL);
+        intent.putExtra(ARG_SYNC_TYPE, TYPE_FETCH_NOTE);
         context.startService(intent);
     }
 
-    private void fetchAll() {
+    private void fetchData() {
         try {
-            BaseModel<SyncState> syncStateModel = mUserApi.getSyncState().execute().body();
-            if (syncStateModel.data == null && !syncStateModel.ok) {
-                return;
-            }
             Account account = AppDataBase.getAccountWithToken();
             int maxUsn = Math.max(account.notebookUsn, account.noteUsn);
-            if (syncStateModel.data.lastSyncUsn <= maxUsn) {
-                RxBus.getInstance().send(new SyncEvent());
-                return;
+            if (maxUsn == 0) {
+                fetchAllData(account, maxUsn);
+            } else {
+                fetchIncreaData(account);
             }
-            account.noteUsn = syncStateModel.data.lastSyncUsn;
-            account.notebookUsn = syncStateModel.data.lastSyncUsn;
-            account.update();
 
-            final BaseModel<List<Notebook>> notebookModel = mNotebookApi.getCallNotebooks().execute().body();
-            if (notebookModel.data == null && !syncStateModel.ok) {
-                return;
-            }
-            FlowManager.getDatabase(AppDataBase.class).executeTransaction(new ITransaction() {
-                @Override
-                public void execute(DatabaseWrapper databaseWrapper) {
-                    List<Notebook> notebooks = notebookModel.data;
-                    for (Notebook notebook : notebooks) {
-                        if (!notebook.isDeleted) {
-                            notebook.save(databaseWrapper);
-                        }
-                    }
-                }
-            });
-
-            for (Notebook notebook : notebookModel.data) {
-                final BaseModel<List<Note>> noteModel = mNoteApi.getCallNotes(notebook.notebookId).execute().body();
-                if (noteModel.data == null && !noteModel.ok) {
-                    break;
-                }
-                for (Note note : noteModel.data) {
-                    note.insert();
-                    BaseModel<Note> contentNoteModel = mNoteApi.getNoteAndContent(note.noteId).execute().body();
-                    if (contentNoteModel.data == null && !contentNoteModel.ok) {
-                        break;
-                    }
-                    if (!contentNoteModel.data.isDeleted) {
-                        String content;
-                        if (contentNoteModel.data.isMarkDown) {
-                            content = convertToLocalImageLinkForMD(note.id, contentNoteModel.data.content);
-                        } else {
-                            content = convertToLocalImageLinkForRichText(note.id, contentNoteModel.data.content);
-                        }
-                        note.content = content;
-                        note.noteAbstract = content.length() < 500 ? content : content.substring(0, 500);
-                        note.update();
-                    }
-                }
-            }
-            RxBus.getInstance().send(new SyncEvent());
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private void fetchIncreaData(Account account) throws IOException {
+        if (!NetWorkUtils.isConnected(this)) {
+            RxBus.getInstance().send(new SyncEvent());
+            return;
+        }
+        BaseModel<SyncState> syncStateModel = mUserApi.getSyncState().execute().body();
+        if (syncStateModel.isError()) {
+            RxBus.getInstance().send(new SyncEvent());
+            return;
+        }
+        if (account.notebookUsn < syncStateModel.data.lastSyncUsn) {
+            //同步notebook
+            for (int i = account.notebookUsn; i <= syncStateModel.data.lastSyncUsn; i += MAX_ENTRY) {
+                BaseModel<List<Notebook>> syncNotebookModel = mNotebookApi.getSyncNotebooks(i, MAX_ENTRY).execute().body();
+                if (syncNotebookModel.isError()) {
+                    continue;
+                }
+                for (Notebook remoteNotebook : syncNotebookModel.data) {
+                    Notebook localNotebook = AppDataBase.getNotebookByServerId(remoteNotebook.notebookId);
+                    if (localNotebook == null) {
+                        remoteNotebook.insert();
+                    } else {
+                        remoteNotebook.id = localNotebook.id;
+                        remoteNotebook.isDirty = false;
+                        remoteNotebook.update();
+                    }
+                    Account usnAccount = AppDataBase.getAccountWithToken();
+                    usnAccount.setNotebookUsn(remoteNotebook.usn);
+                    usnAccount.update();
+                }
+            }
+
+        }
+        if (account.noteUsn < syncStateModel.data.lastSyncUsn) {
+            //同步note
+            for (int i = account.noteUsn; i <= syncStateModel.data.lastSyncUsn; i += MAX_ENTRY) {
+                BaseModel<List<Note>> syncNoteModel = mNoteApi.getCallSyncNotes(i, MAX_ENTRY).execute().body();
+                if (syncNoteModel.isError()) {
+                    continue;
+                }
+                for (Note noteMeta : syncNoteModel.data) {
+                    BaseModel<Note> remoteNoteModel = mNoteApi.getNoteAndContent(noteMeta.noteId).execute().body();
+                    if (remoteNoteModel.isError()) {
+                        continue;
+                    }
+                    Note localNote = AppDataBase.getNoteByServerId(noteMeta.noteId);
+                    Note remoteNote = remoteNoteModel.data;
+                    long localId;
+                    if (localNote == null) {
+                        localId = remoteNote.insert();
+                        remoteNote.id = localId;
+                    } else {
+                        long id = localNote.id;
+                        if (localNote.isDirty) {
+                            LogUtils.w("note conflict, usn=" + remoteNote.usn + ", id=" + remoteNote.noteId);
+                            //save local version as a local note
+                            localNote.id = null;
+                            localNote.title = localNote.title + CONFLICT_SUFFIX;
+                            localNote.noteId = "";
+                            localNote.insert();
+                        }
+                        LogUtils.i("note update, usn=" + remoteNote.usn + ", id=" + remoteNote.noteId);
+                        remoteNote.id = id;
+                        localId = localNote.id;
+                    }
+                    remoteNote.isDirty = false;
+                    String content;
+                    if (remoteNote.isMarkDown) {
+                        content = convertToLocalImageLinkForMD(localId, remoteNote.content);
+                    } else {
+                        content = convertToLocalImageLinkForRichText(localId, remoteNote.content);
+                    }
+//                    LogUtils.i("content=" + remoteNote.content);
+                    remoteNote.content = content;
+                    remoteNote.noteAbstract = content.length() < 500 ? content : content.substring(0, 500);
+                    remoteNote.update();
+//                    handleFile(localId, remoteNote.getNoteFiles());
+//                    updateTagsToLocal(localId, remoteNote.getTagData());
+                    Account usnAccount = AppDataBase.getAccountWithToken();
+                    usnAccount.setNoteUsn(remoteNote.usn);
+                    account.save();
+                }
+            }
+        }
+        RxBus.getInstance().send(new SyncEvent());
+    }
+
+    private void fetchAllData(Account account, int maxUsn) throws IOException {
+        LogUtils.e("fetchAllData invoked!");
+        if (!NetWorkUtils.isConnected(this)) {
+            RxBus.getInstance().send(new SyncEvent());
+            return;
+        }
+        BaseModel<SyncState> syncStateModel = mUserApi.getSyncState().execute().body();
+        LogUtils.e("syncStateModel.data.lastSyncUsn == " + syncStateModel.data.lastSyncUsn + ", maxUsn == " + maxUsn);
+
+        if (syncStateModel.isError()) {
+            RxBus.getInstance().send(new SyncEvent());
+            return;
+        }
+        if (syncStateModel.data.lastSyncUsn <= maxUsn) {
+            RxBus.getInstance().send(new SyncEvent());
+            return;
+        }
+
+        final BaseModel<List<Notebook>> notebookModel = mNotebookApi.getCallNotebooks().execute().body();
+        if (notebookModel.isError()) {
+            return;
+        }
+        FlowManager.getDatabase(AppDataBase.class).executeTransaction(new ITransaction() {
+            @Override
+            public void execute(DatabaseWrapper databaseWrapper) {
+                List<Notebook> notebooks = notebookModel.data;
+                for (Notebook notebook : notebooks) {
+                    if (!notebook.isDeleted) {
+                        notebook.save(databaseWrapper);
+                    }
+                }
+            }
+        });
+
+        for (Notebook notebook : notebookModel.data) {
+            final BaseModel<List<Note>> noteModel = mNoteApi.getCallNotes(notebook.notebookId).execute().body();
+            if (noteModel.isError()) {
+                continue;
+            }
+            for (Note note : noteModel.data) {
+                note.insert();
+                BaseModel<Note> contentNoteModel = mNoteApi.getNoteAndContent(note.noteId).execute().body();
+                LogUtils.e("noteId == " + contentNoteModel.data.noteId + ", title == " + contentNoteModel.data.title);
+                if (contentNoteModel.isError()) {
+                    continue;
+                }
+                if (!contentNoteModel.data.isDeleted) {
+                    String content;
+                    if (contentNoteModel.data.isMarkDown) {
+                        content = convertToLocalImageLinkForMD(note.id, contentNoteModel.data.content);
+                    } else {
+                        content = convertToLocalImageLinkForRichText(note.id, contentNoteModel.data.content);
+                    }
+                    note.content = content;
+                    note.noteAbstract = content.length() < 500 ? content : content.substring(0, 500);
+                    note.update();
+                }
+            }
+        }
+        account.noteUsn = syncStateModel.data.lastSyncUsn;
+        account.notebookUsn = syncStateModel.data.lastSyncUsn;
+        account.update();
+        RxBus.getInstance().send(new SyncEvent());
     }
 
     private String convertToLocalImageLinkForRichText(Long id, String content) {
