@@ -75,7 +75,7 @@ public class NoteActivity extends SingleFragmentActivity {
                     EditNoteActivity.showEditNote(getContext(), mNote);
                     break;
                 case R.id.menu_move:
-                    NotesListActivity.showNotesList(getContext(), mNote);
+                    NotesListActivity.showNotesList(this, mNote);
                     break;
             }
         }
@@ -86,6 +86,13 @@ public class NoteActivity extends SingleFragmentActivity {
             args.putSerializable(ARG_NOTE, note);
             fragment.setArguments(args);
             return fragment;
+        }
+
+        @Override
+        public void onActivityResult(int requestCode, int resultCode, Intent data) {
+            if (requestCode == NotesListActivity.REQUEST_CODE && resultCode == RESULT_OK) {
+                mNote = (Note) data.getSerializableExtra(NotesListActivity.INTENT_DATA);
+            }
         }
 
         @Override

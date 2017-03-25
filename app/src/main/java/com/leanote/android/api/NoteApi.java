@@ -11,6 +11,8 @@ import java.util.Map;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import retrofit2.Call;
+import retrofit2.http.FieldMap;
+import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
@@ -44,6 +46,10 @@ public interface NoteApi {
     @Multipart
     @POST("note/updateNote")
     Call<Note> update(@PartMap Map<String, RequestBody> body, @Part List<MultipartBody.Part> files);
+
+    @FormUrlEncoded
+    @POST("note/updateNote")
+    Observable<BaseModel<Note>> updateNote(@FieldMap Map<String, String> map);
 
     @POST("note/deleteTrash")
     Call<UpdateRe> delete(@Query("noteId") String noteId, @Query("usn") int usn);

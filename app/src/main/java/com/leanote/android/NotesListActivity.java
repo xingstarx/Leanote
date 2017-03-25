@@ -1,6 +1,6 @@
 package com.leanote.android;
 
-import android.content.Context;
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -14,22 +14,28 @@ import android.widget.TextView;
 
 import com.leanote.android.api.ApiProvider;
 import com.leanote.android.api.NoteApi;
-import com.leanote.android.api.NotebookApi;
 import com.leanote.android.base.BaseFragment;
 import com.leanote.android.base.SingleFragmentActivity;
 import com.leanote.android.database.AppDataBase;
 import com.leanote.android.model.Account;
+import com.leanote.android.model.BaseModel;
 import com.leanote.android.model.Note;
 import com.leanote.android.model.Notebook;
+import com.leanote.android.utils.NetWorkUtils;
 import com.leanote.android.utils.TimeUtils;
 import com.leanote.android.utils.ToastUtils;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Stack;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by xiongxingxing on 17/3/5.
@@ -38,16 +44,18 @@ import butterknife.OnClick;
 public class NotesListActivity extends SingleFragmentActivity {
 
     public static final String ARG_NOTE = "note";
+    public static final int REQUEST_CODE = 11;
+    public static final String INTENT_DATA = "intent_data";
 
     @Override
     protected Fragment createFragment() {
         return NotesListFragment.newInstance((Note) getIntent().getSerializableExtra(ARG_NOTE));
     }
 
-    public static void showNotesList(Context context, Note note) {
-        Intent intent = new Intent(context, NotesListActivity.class);
+    public static void showNotesList(Fragment fragment, Note note) {
+        Intent intent = new Intent(fragment.getContext(), NotesListActivity.class);
         intent.putExtra(ARG_NOTE, note);
-        context.startActivity(intent);
+        fragment.startActivityForResult(intent, REQUEST_CODE);
     }
 
     @Override
@@ -124,10 +132,44 @@ public class NotesListActivity extends SingleFragmentActivity {
                     if (mNotebookAdapter.isRoot()) {
                         ToastUtils.show(getContext(), "不能把笔记移动到根节点位置");
                     } else {
-                        // TODO: 17/3/19 更新note所在的笔记本
+                        Map<String, String> map = new HashMap<>();
+                        map.put("NoteId", mNote.noteId);
+                        map.put("Usn", String.valueOf(mNote.usn));
+                        map.put("NotebookId", mNotebookAdapter.getParentNotebookId());
+                        if (NetWorkUtils.isConnected(getContext())) {
+                            mNoteApi.updateNote(map).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+                                    .subscribe(new Action1<BaseModel<Note>>() {
+                                        @Override
+                                        public void call(BaseModel<Note> noteBaseModel) {
+                                            if (!noteBaseModel.isError()) {
+                                                handleSelectEvent(noteBaseModel.data.noteId, noteBaseModel.data.noteBookId);
+                                            }
+                                        }
+                                    }, new Action1<Throwable>() {
+                                        @Override
+                                        public void call(Throwable throwable) {
+                                            throwable.printStackTrace();
+                                            ToastUtils.show(getContext(), "移动失败");
+                                            getActivity().finish();
+                                        }
+                                    });
+                        } else {
+                            handleSelectEvent(mNote.noteId, mNotebookAdapter.getParentNotebookId());
+                        }
                     }
                     break;
             }
+        }
+
+        private void handleSelectEvent(String noteId, String noteBookId) {
+            Note localeNote = AppDataBase.getNoteByServerId(noteId);
+            localeNote.noteBookId = noteBookId;
+            localeNote.update();
+            ToastUtils.show(getContext(), "移动成功");
+            Intent intent = new Intent();
+            intent.putExtra(INTENT_DATA, localeNote);
+            getActivity().setResult(Activity.RESULT_OK, intent);
+            getActivity().finish();
         }
 
         public boolean onBackPressed() {

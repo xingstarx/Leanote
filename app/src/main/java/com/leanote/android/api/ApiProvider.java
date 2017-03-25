@@ -39,7 +39,7 @@ public class ApiProvider {
     public void init(String host) {
         HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
         if (BuildConfig.DEBUG) {
-            interceptor.setLevel(HttpLoggingInterceptor.Level.BASIC);
+            interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
         } else {
             interceptor.setLevel(HttpLoggingInterceptor.Level.BASIC);
         }
