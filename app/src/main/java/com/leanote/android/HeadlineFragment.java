@@ -21,6 +21,7 @@ import com.leanote.android.model.Account;
 import com.leanote.android.model.Note;
 import com.leanote.android.rxbus.RxBus;
 import com.leanote.android.rxbus.SyncEvent;
+import com.leanote.android.service.SyncService;
 import com.leanote.android.utils.TimeUtils;
 
 import java.util.ArrayList;
@@ -72,16 +73,7 @@ public class HeadlineFragment extends BaseFragment {
         mRecyclerView.setArrowImageView(R.drawable.ic_font_downgrey);
         mRecyclerView.setEmptyView(mEmptyView);
         mRecyclerView.setLoadingMoreEnabled(false);
-        mRecyclerView.setLoadingListener(new XRecyclerView.LoadingListener() {
-            @Override
-            public void onRefresh() {
-                loadData(null);
-            }
-
-            @Override
-            public void onLoadMore() {
-            }
-        });
+        mRecyclerView.setPullRefreshEnabled(false);
 
         RxBus.getInstance().toObservable().subscribe(new Action1<Object>() {
             @Override
@@ -90,7 +82,7 @@ public class HeadlineFragment extends BaseFragment {
                     mRecyclerView.post(new Runnable() {
                         @Override
                         public void run() {
-                            loadData(event);
+                            loadData();
                         }
                     });
                 }
@@ -100,14 +92,14 @@ public class HeadlineFragment extends BaseFragment {
         mRecyclerView.setAdapter(mHeadLineAdapter);
     }
 
-    private void loadData(final Object event) {
-        if (event == null) {
-            mRecyclerView.refreshComplete();
-        }
+    private void loadData() {
         mHeadLineAdapter.setNotes(AppDataBase.getAllNotes(mCurrentAccount.getUserId()));
         mHeadLineAdapter.notifyDataSetChanged();
     }
 
+    public void onRefresh() {
+        SyncService.startSyncNote(getContext());
+    }
 
     static class HeadLineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 

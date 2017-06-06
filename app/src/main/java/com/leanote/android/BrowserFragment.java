@@ -25,8 +25,10 @@ import com.leanote.android.model.FullTree;
 import com.leanote.android.model.Note;
 import com.leanote.android.model.Notebook;
 import com.leanote.android.model.TreeEntry;
+import com.leanote.android.rxbus.MenuRefreshEvent;
 import com.leanote.android.rxbus.RxBus;
 import com.leanote.android.rxbus.SyncEvent;
+import com.leanote.android.service.SyncService;
 import com.leanote.android.utils.TimeUtils;
 
 import java.util.List;
@@ -88,22 +90,13 @@ public class BrowserFragment extends BaseFragment {
         mRecyclerView.setLoadingMoreProgressStyle(ProgressStyle.BallRotate);
         mRecyclerView.setArrowImageView(R.drawable.ic_font_downgrey);
         mRecyclerView.setEmptyView(mEmptyView);
+        mRecyclerView.setPullRefreshEnabled(false);
         mRecyclerView.setLoadingMoreEnabled(false);
-        mRecyclerView.setLoadingListener(new XRecyclerView.LoadingListener() {
-            @Override
-            public void onRefresh() {
-                loadEntryData(null);
-            }
-
-            @Override
-            public void onLoadMore() {
-            }
-        });
         RxBus.getInstance().toObservable().subscribe(new Action1<Object>() {
             @Override
             public void call(Object event) {
                 if (event instanceof SyncEvent) {
-                    loadEntryData(event);
+                    loadEntryData();
                 }
             }
         });
@@ -111,13 +104,15 @@ public class BrowserFragment extends BaseFragment {
         mRecyclerView.setAdapter(mEntryAdapter);
     }
 
-    private void loadEntryData(final Object event) {
+    public void onRefresh() {
+        SyncService.startSyncNote(getContext());
+    }
+
+    private void loadEntryData() {
         Observable.create(new Observable.OnSubscribe<FullTree.Folder>() {
             @Override
             public void call(Subscriber<? super FullTree.Folder> subscriber) {
-                if (mNotebooks == null) {
-                    mNotebooks = AppDataBase.getRootNotebooks(mCurrentAccount.userId);
-                }
+                mNotebooks = AppDataBase.getRootNotebooks(mCurrentAccount.userId);
                 mRootFolder = mRootFolder.initFullTree(mNotebooks, mCurrentAccount.userId);
                 subscriber.onNext(mRootFolder);
                 subscriber.onCompleted();
@@ -126,9 +121,6 @@ public class BrowserFragment extends BaseFragment {
                 .subscribe(new Action1<FullTree.Folder>() {
                     @Override
                     public void call(FullTree.Folder folder) {
-                        if (event == null) {
-                            mRecyclerView.refreshComplete();
-                        }
                         mEntryAdapter.setFolder(folder);
                         mEntryAdapter.notifyDataSetChanged();
                     }
@@ -140,6 +132,9 @@ public class BrowserFragment extends BaseFragment {
                 });
     }
 
+    public boolean isRootFolder() {
+        return mEntryAdapter.isRootFolder();
+    }
     @Override
     public boolean onBackPressed() {
         if (!mEntryAdapter.isRootFolder()) {
@@ -186,6 +181,7 @@ public class BrowserFragment extends BaseFragment {
                     public void onClick(View v) {
                         stack.push(folder);
                         setFolder(folder.folders.get(position));
+                        RxBus.getInstance().send(new MenuRefreshEvent(MenuRefreshEvent.TYPE_HIDE_MENU));
                         notifyDataSetChanged();
                     }
                 });
@@ -230,6 +226,7 @@ public class BrowserFragment extends BaseFragment {
         public void onBackPressed() {
             FullTree.Folder parentFolder = stack.pop();
             setFolder(parentFolder);
+            RxBus.getInstance().send(isRootFolder() ? new MenuRefreshEvent(MenuRefreshEvent.TYPE_SHOW_MENU) : new MenuRefreshEvent(MenuRefreshEvent.TYPE_HIDE_MENU));
             notifyDataSetChanged();
         }
 
